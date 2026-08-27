@@ -20,7 +20,6 @@ public final class DatabaseConnection {
                     "database.properties was not found."
                 );
             }
-
             properties.load(input);
 
         } catch (Exception exception) {
