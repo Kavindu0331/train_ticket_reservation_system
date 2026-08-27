@@ -1,6 +1,6 @@
 package com.trainreservation.ui;
 
-import com.trainreservation.util.DatabaseConnection;
+import com.trainreservation.DatabaseConnection;
 
 import javax.swing.*;
 import java.awt.*;

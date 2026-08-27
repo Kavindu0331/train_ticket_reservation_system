@@ -1,4 +1,4 @@
-package com.trainreservation.util;
+package com.trainreservation;
 
 import java.io.InputStream;
 import java.sql.Connection;
@@ -22,7 +22,6 @@ public final class DatabaseConnection {
             }
 
             properties.load(input);
-
         } catch (Exception exception) {
             throw new RuntimeException(
                 "Could not load database settings.",
