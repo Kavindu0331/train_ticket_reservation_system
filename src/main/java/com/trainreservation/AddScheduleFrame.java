@@ -15,6 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -48,16 +49,22 @@ public class AddScheduleFrame extends JFrame {
 
     private final JSpinner journeyDate;
 
+    private final JSpinner departureTime;
+
+    private final JSpinner arrivalTime;
+
     public AddScheduleFrame(JFrame dashboard) {
         this.dashboard = dashboard;
 
         setTitle("Add Schedule");
-        setSize(680, 650);
+        setSize(700, 790);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setResizable(false);
 
         journeyDate = createDateSpinner();
+        departureTime = createTimeSpinner(8, 0);
+        arrivalTime = createTimeSpinner(11, 0);
 
         ((AbstractDocument) seatsField.getDocument())
             .setDocumentFilter(new NumberFilter());
@@ -129,9 +136,25 @@ public class AddScheduleFrame extends JFrame {
         addField(
             panel,
             c,
+            "Departure Time",
+            departureTime,
+            5
+        );
+
+        addField(
+            panel,
+            c,
+            "Arrival Time",
+            arrivalTime,
+            6
+        );
+
+        addField(
+            panel,
+            c,
             "Available Seats",
             seatsField,
-            5
+            7
         );
 
         addField(
@@ -139,7 +162,7 @@ public class AddScheduleFrame extends JFrame {
             c,
             "Base Fare",
             fareField,
-            6
+            8
         );
 
         addField(
@@ -147,7 +170,7 @@ public class AddScheduleFrame extends JFrame {
             c,
             "Status",
             statusBox,
-            7
+            9
         );
 
         JButton saveButton = makeButton("SAVE");
@@ -168,7 +191,7 @@ public class AddScheduleFrame extends JFrame {
         buttonPanel.add(backButton);
 
         c.gridx = 0;
-        c.gridy = 8;
+        c.gridy = 10;
         c.gridwidth = 2;
         c.insets = new Insets(25, 5, 5, 5);
 
@@ -212,6 +235,46 @@ public class AddScheduleFrame extends JFrame {
             new JSpinner.DateEditor(
                 spinner,
                 "yyyy-MM-dd"
+            )
+        );
+
+        return spinner;
+    }
+
+    private JSpinner createTimeSpinner(
+        int hour,
+        int minute
+    ) {
+        java.util.Calendar calendar =
+            java.util.Calendar.getInstance();
+
+        calendar.set(
+            java.util.Calendar.HOUR_OF_DAY,
+            hour
+        );
+
+        calendar.set(
+            java.util.Calendar.MINUTE,
+            minute
+        );
+
+        calendar.set(
+            java.util.Calendar.SECOND,
+            0
+        );
+
+        SpinnerDateModel model =
+            new SpinnerDateModel();
+
+        model.setValue(calendar.getTime());
+
+        JSpinner spinner =
+            new JSpinner(model);
+
+        spinner.setEditor(
+            new JSpinner.DateEditor(
+                spinner,
+                "HH:mm"
             )
         );
 
@@ -528,17 +591,44 @@ public class AddScheduleFrame extends JFrame {
             return;
         }
 
+        LocalTime departureTimeValue =
+            toLocalTime(
+                (Date) departureTime.getValue()
+            );
+
+        LocalTime arrivalTimeValue =
+            toLocalTime(
+                (Date) arrivalTime.getValue()
+            );
+
+        if (
+            !arrivalTimeValue.isAfter(
+                departureTimeValue
+            )
+        ) {
+            JOptionPane.showMessageDialog(
+                this,
+                "Arrival time must be after departure time.",
+                "Invalid Time",
+                JOptionPane.WARNING_MESSAGE
+            );
+
+            return;
+        }
+
         String sql = """
             INSERT INTO schedules (
                 train_id,
                 departure_station,
                 arrival_station,
                 journey_date,
+                departure_time,
+                arrival_time,
                 available_seats,
                 base_fare,
                 status
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
 
         try (
@@ -557,9 +647,23 @@ public class AddScheduleFrame extends JFrame {
                 java.sql.Date.valueOf(date)
             );
 
-            statement.setInt(5, availableSeats);
-            statement.setDouble(6, baseFare);
-            statement.setString(7, status);
+            statement.setTime(
+                5,
+                java.sql.Time.valueOf(
+                    departureTimeValue
+                )
+            );
+
+            statement.setTime(
+                6,
+                java.sql.Time.valueOf(
+                    arrivalTimeValue
+                )
+            );
+
+            statement.setInt(7, availableSeats);
+            statement.setDouble(8, baseFare);
+            statement.setString(9, status);
 
             statement.executeUpdate();
 
@@ -582,6 +686,14 @@ public class AddScheduleFrame extends JFrame {
         }
     }
 
+    private LocalTime toLocalTime(Date value) {
+        return value.toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalTime()
+            .withSecond(0)
+            .withNano(0);
+    }
+
     private void clearFields() {
         if (trainBox.getItemCount() > 0) {
             trainBox.setSelectedIndex(0);
@@ -596,10 +708,41 @@ public class AddScheduleFrame extends JFrame {
         }
 
         journeyDate.setValue(new Date());
+        departureTime.setValue(
+            createTimeValue(8, 0)
+        );
+        arrivalTime.setValue(
+            createTimeValue(11, 0)
+        );
         fareField.setText("");
         statusBox.setSelectedItem("SCHEDULED");
 
         showTrainSeats();
+    }
+
+    private Date createTimeValue(
+        int hour,
+        int minute
+    ) {
+        java.util.Calendar calendar =
+            java.util.Calendar.getInstance();
+
+        calendar.set(
+            java.util.Calendar.HOUR_OF_DAY,
+            hour
+        );
+
+        calendar.set(
+            java.util.Calendar.MINUTE,
+            minute
+        );
+
+        calendar.set(
+            java.util.Calendar.SECOND,
+            0
+        );
+
+        return calendar.getTime();
     }
 
     private void returnToDashboard() {
