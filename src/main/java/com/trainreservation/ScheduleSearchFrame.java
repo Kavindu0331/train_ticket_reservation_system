@@ -7,11 +7,12 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.Calendar;
+import java.time.ZoneId;
+import java.util.Date;
 
 public class ScheduleSearchFrame extends JFrame {
 
@@ -24,8 +25,8 @@ public class ScheduleSearchFrame extends JFrame {
     private final JComboBox<String> arrivalBox =
         new JComboBox<>();
 
-    private final JSpinner dateSpinner =
-        new JSpinner(createDateModel());
+    private final JSpinner journeyDate =
+        createDateSpinner();
 
     private final DefaultTableModel tableModel =
         new DefaultTableModel(
@@ -36,6 +37,8 @@ public class ScheduleSearchFrame extends JFrame {
                 "Departure",
                 "Arrival",
                 "Journey Date",
+                "Departure Time",
+                "Arrival Time",
                 "Available Seats",
                 "Base Fare"
             },
@@ -60,13 +63,10 @@ public class ScheduleSearchFrame extends JFrame {
         this.customerId = customerId;
 
         setTitle("Search Available Schedules");
-        setSize(1280, 800);
+        setSize(1400, 850);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setResizable(true);
-
-        departureBox.setEditable(true);
-        arrivalBox.setEditable(true);
 
         createInterface();
         loadStations();
@@ -82,45 +82,25 @@ public class ScheduleSearchFrame extends JFrame {
         );
     }
 
-    public ScheduleSearchFrame(long customerId) {
-        this(null, customerId);
-    }
-
-    public ScheduleSearchFrame(
-        JFrame previousFrame,
-        long customerId,
-        String customerName
-    ) {
-        this(previousFrame, customerId);
-    }
-
-    public ScheduleSearchFrame(
-        long customerId,
-        String customerName
-    ) {
-        this(null, customerId);
-    }
-
     private void createInterface() {
         JPanel mainPanel =
-            new JPanel(new BorderLayout(12, 12));
+            new JPanel(new BorderLayout(15, 15));
 
         mainPanel.setBackground(
             new Color(238, 244, 250)
         );
 
         mainPanel.setBorder(
-            new EmptyBorder(25, 32, 22, 32)
+            new EmptyBorder(25, 25, 25, 25)
         );
 
-        JLabel title =
-            new JLabel(
-                "Search Available Schedules",
-                SwingConstants.CENTER
-            );
+        JLabel title = new JLabel(
+            "Search Available Schedules",
+            SwingConstants.CENTER
+        );
 
         title.setFont(
-            new Font("Arial", Font.BOLD, 32)
+            new Font("Arial", Font.BOLD, 30)
         );
 
         title.setForeground(
@@ -128,87 +108,7 @@ public class ScheduleSearchFrame extends JFrame {
         );
 
         JPanel searchPanel =
-            new JPanel(new GridBagLayout());
-
-        searchPanel.setBackground(Color.WHITE);
-
-        searchPanel.setBorder(
-            BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(
-                    new Color(205, 216, 230)
-                ),
-                new EmptyBorder(25, 30, 25, 30)
-            )
-        );
-
-        GridBagConstraints c =
-            new GridBagConstraints();
-
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.insets = new Insets(8, 8, 8, 8);
-
-        addInput(
-            searchPanel,
-            c,
-            "Departure Station",
-            departureBox,
-            0
-        );
-
-        addInput(
-            searchPanel,
-            c,
-            "Arrival Station",
-            arrivalBox,
-            1
-        );
-
-        JSpinner.DateEditor dateEditor =
-            new JSpinner.DateEditor(
-                dateSpinner,
-                "yyyy-MM-dd"
-            );
-
-        dateSpinner.setEditor(dateEditor);
-
-        addInput(
-            searchPanel,
-            c,
-            "Journey Date",
-            dateSpinner,
-            2
-        );
-
-        JButton searchButton =
-            makeButton("SEARCH");
-
-        JButton clearButton =
-            makeButton("CLEAR");
-
-        JButton backButton =
-            makeButton("BACK");
-
-        JPanel searchButtons =
-            new JPanel(
-                new FlowLayout(
-                    FlowLayout.CENTER,
-                    15,
-                    0
-                )
-            );
-
-        searchButtons.setOpaque(false);
-        searchButtons.add(searchButton);
-        searchButtons.add(clearButton);
-        searchButtons.add(backButton);
-
-        c.gridx = 0;
-        c.gridy = 3;
-        c.gridwidth = 2;
-        c.weightx = 1;
-        c.insets = new Insets(18, 8, 2, 8);
-
-        searchPanel.add(searchButtons, c);
+            createSearchPanel();
 
         configureTable();
 
@@ -217,7 +117,7 @@ public class ScheduleSearchFrame extends JFrame {
 
         scrollPane.setBorder(
             BorderFactory.createLineBorder(
-                new Color(195, 208, 225)
+                new Color(190, 210, 230)
             )
         );
 
@@ -225,7 +125,7 @@ public class ScheduleSearchFrame extends JFrame {
             makeButton("CONTINUE BOOKING");
 
         continueButton.setPreferredSize(
-            new Dimension(230, 50)
+            new Dimension(225, 48)
         );
 
         JPanel bottomPanel =
@@ -240,22 +140,22 @@ public class ScheduleSearchFrame extends JFrame {
         bottomPanel.setOpaque(false);
         bottomPanel.add(continueButton);
 
-        JPanel centerPanel =
-            new JPanel(new BorderLayout(12, 12));
+        JPanel contentPanel =
+            new JPanel(new BorderLayout(15, 15));
 
-        centerPanel.setOpaque(false);
+        contentPanel.setOpaque(false);
 
-        centerPanel.add(
+        contentPanel.add(
             searchPanel,
             BorderLayout.NORTH
         );
 
-        centerPanel.add(
+        contentPanel.add(
             scrollPane,
             BorderLayout.CENTER
         );
 
-        centerPanel.add(
+        contentPanel.add(
             bottomPanel,
             BorderLayout.SOUTH
         );
@@ -266,11 +166,98 @@ public class ScheduleSearchFrame extends JFrame {
         );
 
         mainPanel.add(
-            centerPanel,
+            contentPanel,
             BorderLayout.CENTER
         );
 
         setContentPane(mainPanel);
+
+        continueButton.addActionListener(
+            event -> continueBooking()
+        );
+    }
+
+    private JPanel createSearchPanel() {
+        JPanel searchPanel =
+            new JPanel(new GridBagLayout());
+
+        searchPanel.setBackground(Color.WHITE);
+
+        searchPanel.setBorder(
+            BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(
+                    new Color(205, 218, 232)
+                ),
+                new EmptyBorder(20, 35, 20, 35)
+            )
+        );
+
+        GridBagConstraints constraints =
+            new GridBagConstraints();
+
+        constraints.fill =
+            GridBagConstraints.HORIZONTAL;
+
+        addInput(
+            searchPanel,
+            constraints,
+            "Departure Station",
+            departureBox,
+            0
+        );
+
+        addInput(
+            searchPanel,
+            constraints,
+            "Arrival Station",
+            arrivalBox,
+            1
+        );
+
+        addInput(
+            searchPanel,
+            constraints,
+            "Journey Date",
+            journeyDate,
+            2
+        );
+
+        JButton searchButton =
+            makeButton("SEARCH");
+
+        JButton clearButton =
+            makeButton("CLEAR");
+
+        JButton backButton =
+            makeButton("BACK");
+
+        JPanel buttonPanel =
+            new JPanel(
+                new FlowLayout(
+                    FlowLayout.CENTER,
+                    15,
+                    0
+                )
+            );
+
+        buttonPanel.setOpaque(false);
+
+        buttonPanel.add(searchButton);
+        buttonPanel.add(clearButton);
+        buttonPanel.add(backButton);
+
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        constraints.gridwidth = 2;
+        constraints.weightx = 1;
+
+        constraints.insets =
+            new Insets(15, 5, 0, 5);
+
+        searchPanel.add(
+            buttonPanel,
+            constraints
+        );
 
         searchButton.addActionListener(
             event -> searchSchedules()
@@ -284,26 +271,12 @@ public class ScheduleSearchFrame extends JFrame {
             event -> returnToPreviousPage()
         );
 
-        continueButton.addActionListener(
-            event -> continueBooking()
-        );
-
-        scheduleTable.addMouseListener(
-            new java.awt.event.MouseAdapter() {
-                public void mouseClicked(
-                    java.awt.event.MouseEvent event
-                ) {
-                    if (event.getClickCount() == 2) {
-                        continueBooking();
-                    }
-                }
-            }
-        );
+        return searchPanel;
     }
 
     private void addInput(
         JPanel panel,
-        GridBagConstraints c,
+        GridBagConstraints constraints,
         String labelText,
         JComponent input,
         int row
@@ -320,29 +293,34 @@ public class ScheduleSearchFrame extends JFrame {
         );
 
         input.setPreferredSize(
-            new Dimension(650, 48)
+            new Dimension(760, 45)
         );
 
         input.setFont(
             new Font("Arial", Font.PLAIN, 14)
         );
 
-        c.gridy = row;
-        c.gridwidth = 1;
+        constraints.gridx = 0;
+        constraints.gridy = row;
+        constraints.gridwidth = 1;
+        constraints.weightx = 0;
 
-        c.gridx = 0;
-        c.weightx = 0;
+        constraints.insets =
+            new Insets(8, 5, 8, 20);
 
-        panel.add(label, c);
+        panel.add(label, constraints);
 
-        c.gridx = 1;
-        c.weightx = 1;
+        constraints.gridx = 1;
+        constraints.weightx = 1;
 
-        panel.add(input, c);
+        constraints.insets =
+            new Insets(8, 5, 8, 5);
+
+        panel.add(input, constraints);
     }
 
     private void configureTable() {
-        scheduleTable.setRowHeight(32);
+        scheduleTable.setRowHeight(31);
 
         scheduleTable.setFont(
             new Font("Arial", Font.PLAIN, 13)
@@ -352,36 +330,37 @@ public class ScheduleSearchFrame extends JFrame {
             ListSelectionModel.SINGLE_SELECTION
         );
 
-        scheduleTable.setAutoCreateRowSorter(true);
+        scheduleTable.setAutoResizeMode(
+            JTable.AUTO_RESIZE_ALL_COLUMNS
+        );
+
         scheduleTable.setFillsViewportHeight(true);
 
-        scheduleTable.setGridColor(
-            new Color(205, 215, 228)
-        );
+        scheduleTable.getTableHeader()
+            .setPreferredSize(
+                new Dimension(0, 46)
+            );
 
-        scheduleTable.setSelectionBackground(
-            new Color(205, 225, 250)
-        );
-
-        scheduleTable.setSelectionForeground(
-            Color.BLACK
-        );
+        scheduleTable.getTableHeader()
+            .setReorderingAllowed(false);
 
         DefaultTableCellRenderer headerRenderer =
             new DefaultTableCellRenderer();
 
-        headerRenderer.setBackground(
-            new Color(15, 75, 140)
-        );
-
-        headerRenderer.setForeground(Color.WHITE);
-
-        headerRenderer.setFont(
-            new Font("Arial", Font.BOLD, 13)
-        );
-
         headerRenderer.setHorizontalAlignment(
             SwingConstants.CENTER
+        );
+
+        headerRenderer.setBackground(
+            new Color(15, 82, 145)
+        );
+
+        headerRenderer.setForeground(
+            Color.WHITE
+        );
+
+        headerRenderer.setFont(
+            new Font("Arial", Font.BOLD, 12)
         );
 
         headerRenderer.setOpaque(true);
@@ -391,31 +370,53 @@ public class ScheduleSearchFrame extends JFrame {
             column < scheduleTable.getColumnCount();
             column++
         ) {
-            scheduleTable
-                .getColumnModel()
+            scheduleTable.getColumnModel()
                 .getColumn(column)
-                .setHeaderRenderer(headerRenderer);
+                .setHeaderRenderer(
+                    headerRenderer
+                );
         }
 
-        scheduleTable
-            .getTableHeader()
-            .setPreferredSize(
-                new Dimension(0, 38)
-            );
+        int[] widths = {
+            75,
+            95,
+            125,
+            120,
+            120,
+            95,
+            95,
+            95,
+            105,
+            85
+        };
+
+        for (
+            int column = 0;
+            column < widths.length;
+            column++
+        ) {
+            scheduleTable.getColumnModel()
+                .getColumn(column)
+                .setPreferredWidth(
+                    widths[column]
+                );
+        }
     }
 
-    private static JButton makeButton(String text) {
+    private JButton makeButton(String text) {
         JButton button =
             new JButton(text);
 
-        button.setUI(new BasicButtonUI());
+        button.setUI(
+            new BasicButtonUI()
+        );
 
         button.setPreferredSize(
-            new Dimension(210, 50)
+            new Dimension(210, 47)
         );
 
         button.setBackground(
-            new Color(30, 105, 200)
+            new Color(35, 110, 200)
         );
 
         button.setForeground(Color.WHITE);
@@ -426,6 +427,7 @@ public class ScheduleSearchFrame extends JFrame {
 
         button.setFocusPainted(false);
         button.setBorderPainted(false);
+        button.setOpaque(true);
 
         button.setCursor(
             Cursor.getPredefinedCursor(
@@ -436,61 +438,30 @@ public class ScheduleSearchFrame extends JFrame {
         return button;
     }
 
-    private static SpinnerDateModel createDateModel() {
-        Calendar calendar =
-            Calendar.getInstance();
+    private JSpinner createDateSpinner() {
+        SpinnerDateModel model =
+            new SpinnerDateModel();
 
-        calendar.set(
-            Calendar.HOUR_OF_DAY,
-            0
+        model.setValue(new Date());
+
+        JSpinner spinner =
+            new JSpinner(model);
+
+        spinner.setEditor(
+            new JSpinner.DateEditor(
+                spinner,
+                "yyyy-MM-dd"
+            )
         );
 
-        calendar.set(
-            Calendar.MINUTE,
-            0
-        );
-
-        calendar.set(
-            Calendar.SECOND,
-            0
-        );
-
-        calendar.set(
-            Calendar.MILLISECOND,
-            0
-        );
-
-        return new SpinnerDateModel(
-            calendar.getTime(),
-            null,
-            null,
-            Calendar.DAY_OF_MONTH
-        );
+        return spinner;
     }
 
     private void loadStations() {
         String sql = """
             SELECT station_name
-            FROM (
-                SELECT station_name
-                FROM stations
-
-                UNION
-
-                SELECT departure_station AS station_name
-                FROM schedules
-                WHERE status = 'SCHEDULED'
-                  AND departure_station IS NOT NULL
-                  AND TRIM(departure_station) <> ''
-
-                UNION
-
-                SELECT arrival_station AS station_name
-                FROM schedules
-                WHERE status = 'SCHEDULED'
-                  AND arrival_station IS NOT NULL
-                  AND TRIM(arrival_station) <> ''
-            ) available_stations
+            FROM stations
+            WHERE active = TRUE
             ORDER BY station_name
             """;
 
@@ -508,30 +479,28 @@ public class ScheduleSearchFrame extends JFrame {
                 statement.executeQuery()
         ) {
             while (result.next()) {
-                String stationName =
-                    result.getString("station_name");
+                String station =
+                    result.getString(
+                        "station_name"
+                    );
 
-                departureBox.addItem(stationName);
-                arrivalBox.addItem(stationName);
+                departureBox.addItem(station);
+                arrivalBox.addItem(station);
             }
 
-            if (departureBox.getItemCount() == 0) {
-                JOptionPane.showMessageDialog(
-                    this,
-                    "No stations are available.",
-                    "No Stations",
-                    JOptionPane.WARNING_MESSAGE
-                );
-                return;
+            if (
+                departureBox.getItemCount() > 0
+            ) {
+                departureBox.setSelectedIndex(0);
             }
 
-            departureBox.setSelectedIndex(0);
-
-            if (arrivalBox.getItemCount() > 1) {
+            if (
+                arrivalBox.getItemCount() > 1
+            ) {
                 arrivalBox.setSelectedIndex(1);
             }
 
-        } catch (Exception exception) {
+        } catch (SQLException exception) {
             showDatabaseError(
                 "Could not load stations:\n"
                     + exception.getMessage()
@@ -539,59 +508,45 @@ public class ScheduleSearchFrame extends JFrame {
         }
     }
 
-    private String getComboText(
-        JComboBox<String> comboBox
-    ) {
-        Object selectedItem =
-            comboBox.getEditor().getItem();
-
-        if (selectedItem == null) {
-            selectedItem =
-                comboBox.getSelectedItem();
-        }
-
-        if (selectedItem == null) {
-            return "";
-        }
-
-        return selectedItem.toString().trim();
-    }
-
     private void searchSchedules() {
         String departure =
-            getComboText(departureBox);
+            (String) departureBox.getSelectedItem();
 
         String arrival =
-            getComboText(arrivalBox);
+            (String) arrivalBox.getSelectedItem();
 
         if (
-            departure.isEmpty()
-                || arrival.isEmpty()
+            departure == null
+                || arrival == null
         ) {
             JOptionPane.showMessageDialog(
                 this,
-                "Enter departure and arrival stations.",
+                "Select departure and arrival stations.",
                 "Missing Information",
                 JOptionPane.WARNING_MESSAGE
             );
             return;
         }
 
-        if (departure.equalsIgnoreCase(arrival)) {
+        if (
+            departure.equalsIgnoreCase(arrival)
+        ) {
             JOptionPane.showMessageDialog(
                 this,
-                "Departure and arrival stations must be different.",
-                "Invalid Route",
+                "Departure and arrival stations cannot be the same.",
+                "Invalid Stations",
                 JOptionPane.WARNING_MESSAGE
             );
             return;
         }
 
-        java.util.Date selectedDate =
-            (java.util.Date) dateSpinner.getValue();
+        Date selectedDate =
+            (Date) journeyDate.getValue();
 
-        Date journeyDate =
-            new Date(selectedDate.getTime());
+        LocalDate date = selectedDate
+            .toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate();
 
         String sql = """
             SELECT
@@ -601,19 +556,21 @@ public class ScheduleSearchFrame extends JFrame {
                 s.departure_station,
                 s.arrival_station,
                 s.journey_date,
+                s.departure_time,
+                s.arrival_time,
                 s.available_seats,
                 s.base_fare
             FROM schedules s
             JOIN trains t
                 ON t.train_id = s.train_id
-            WHERE LOWER(TRIM(s.departure_station))
-                    = LOWER(TRIM(?))
-              AND LOWER(TRIM(s.arrival_station))
-                    = LOWER(TRIM(?))
+            WHERE s.departure_station = ?
+              AND s.arrival_station = ?
               AND s.journey_date = ?
-              AND UPPER(s.status) = 'SCHEDULED'
+              AND s.status = 'SCHEDULED'
               AND s.available_seats > 0
-            ORDER BY s.schedule_id
+            ORDER BY
+                s.departure_time,
+                t.train_number
             """;
 
         tableModel.setRowCount(0);
@@ -625,9 +582,20 @@ public class ScheduleSearchFrame extends JFrame {
             PreparedStatement statement =
                 connection.prepareStatement(sql)
         ) {
-            statement.setString(1, departure);
-            statement.setString(2, arrival);
-            statement.setDate(3, journeyDate);
+            statement.setString(
+                1,
+                departure
+            );
+
+            statement.setString(
+                2,
+                arrival
+            );
+
+            statement.setDate(
+                3,
+                java.sql.Date.valueOf(date)
+            );
 
             try (
                 ResultSet result =
@@ -639,31 +607,34 @@ public class ScheduleSearchFrame extends JFrame {
                             result.getLong(
                                 "schedule_id"
                             ),
-
                             result.getString(
                                 "train_number"
                             ),
-
                             result.getString(
                                 "train_name"
                             ),
-
                             result.getString(
                                 "departure_station"
                             ),
-
                             result.getString(
                                 "arrival_station"
                             ),
-
                             result.getDate(
                                 "journey_date"
                             ),
-
+                            formatTime(
+                                result.getTime(
+                                    "departure_time"
+                                )
+                            ),
+                            formatTime(
+                                result.getTime(
+                                    "arrival_time"
+                                )
+                            ),
                             result.getInt(
                                 "available_seats"
                             ),
-
                             "Rs. "
                                 + result.getBigDecimal(
                                     "base_fare"
@@ -673,7 +644,9 @@ public class ScheduleSearchFrame extends JFrame {
                 }
             }
 
-            if (tableModel.getRowCount() == 0) {
+            if (
+                tableModel.getRowCount() == 0
+            ) {
                 JOptionPane.showMessageDialog(
                     this,
                     "No schedules were found for:\n"
@@ -681,18 +654,13 @@ public class ScheduleSearchFrame extends JFrame {
                         + " to "
                         + arrival
                         + "\nDate: "
-                        + journeyDate,
+                        + date,
                     "No Results",
                     JOptionPane.INFORMATION_MESSAGE
                 );
-            } else {
-                scheduleTable.setRowSelectionInterval(
-                    0,
-                    0
-                );
             }
 
-        } catch (Exception exception) {
+        } catch (SQLException exception) {
             showDatabaseError(
                 "Could not search schedules:\n"
                     + exception.getMessage()
@@ -700,71 +668,72 @@ public class ScheduleSearchFrame extends JFrame {
         }
     }
 
+    private String formatTime(
+        java.sql.Time time
+    ) {
+        if (time == null) {
+            return "--:--";
+        }
+
+        return String.format(
+            "%02d:%02d",
+            time.toLocalTime().getHour(),
+            time.toLocalTime().getMinute()
+        );
+    }
+
     private void continueBooking() {
-        int selectedViewRow =
+        int selectedRow =
             scheduleTable.getSelectedRow();
 
-        if (selectedViewRow == -1) {
+        if (selectedRow == -1) {
             JOptionPane.showMessageDialog(
                 this,
-                "Select a schedule from the table first.",
+                "Select a schedule from the table.",
                 "No Schedule Selected",
                 JOptionPane.WARNING_MESSAGE
             );
             return;
         }
 
-        int selectedModelRow =
-            scheduleTable.convertRowIndexToModel(
-                selectedViewRow
-            );
-
         long scheduleId =
             Long.parseLong(
                 tableModel.getValueAt(
-                    selectedModelRow,
+                    selectedRow,
                     0
                 ).toString()
             );
 
-        try {
-            PassengerDetailsFrame passengerFrame =
-                new PassengerDetailsFrame(
-                    this,
-                    customerId,
-                    scheduleId
-                );
+        setVisible(false);
 
-            passengerFrame.setVisible(true);
-            setVisible(false);
-
-        } catch (Throwable error) {
-            error.printStackTrace();
-
-            JOptionPane.showMessageDialog(
-                this,
-                "Could not open passenger details.\n"
-                    + error.getClass().getSimpleName()
-                    + ": "
-                    + error.getMessage(),
-                "Booking Error",
-                JOptionPane.ERROR_MESSAGE
-            );
-        }
+        new PassengerDetailsFrame(
+            this,
+            customerId,
+            scheduleId
+        ).setVisible(true);
     }
 
     private void clearSearch() {
         tableModel.setRowCount(0);
 
-        departureBox.getEditor().setItem("");
-        arrivalBox.getEditor().setItem("");
+        if (
+            departureBox.getItemCount() > 0
+        ) {
+            departureBox.setSelectedIndex(0);
+        }
 
-        dateSpinner.setValue(
-            Date.valueOf(LocalDate.now())
-        );
+        if (
+            arrivalBox.getItemCount() > 1
+        ) {
+            arrivalBox.setSelectedIndex(1);
+        }
+
+        journeyDate.setValue(new Date());
     }
 
-    private void showDatabaseError(String message) {
+    private void showDatabaseError(
+        String message
+    ) {
         JOptionPane.showMessageDialog(
             this,
             message,
