@@ -206,15 +206,9 @@ public class AccountDashboardFrame extends JFrame {
             event -> openProfile()
         );
 
-        passwordButton.addActionListener(
-            event ->
-                JOptionPane.showMessageDialog(
-                    this,
-                    "Change Password page will be added next.",
-                    "Change Password",
-                    JOptionPane.INFORMATION_MESSAGE
-                )
-        );
+       passwordButton.addActionListener(
+    event -> openChangePassword()
+);
 
         logoutButton.addActionListener(
             event -> logout()
@@ -281,6 +275,29 @@ public class AccountDashboardFrame extends JFrame {
             );
         }
     }
+
+private void openChangePassword() {
+    try {
+        ChangePasswordFrame passwordFrame =
+            new ChangePasswordFrame(this);
+
+        passwordFrame.setVisible(true);
+        setVisible(false);
+
+    } catch (Throwable error) {
+        error.printStackTrace();
+
+        JOptionPane.showMessageDialog(
+            this,
+            "Could not open Change Password.\n"
+                + error.getClass().getSimpleName()
+                + ": "
+                + error.getMessage(),
+            "Password Error",
+            JOptionPane.ERROR_MESSAGE
+        );
+    }
+}
 
     private void logout() {
         int answer =

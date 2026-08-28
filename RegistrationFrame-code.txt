@@ -2,6 +2,7 @@ package com.trainreservation;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.plaf.basic.BasicButtonUI;
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,139 +31,81 @@ public class RegistrationFrame extends JFrame {
         new JCheckBox("Show Passwords");
 
     private final JButton registerButton =
-        createButton("CREATE ACCOUNT");
+        makeButton("CREATE ACCOUNT");
 
-    public RegistrationFrame(JFrame previousFrame) {
+    public RegistrationFrame(
+        JFrame previousFrame
+    ) {
         this.previousFrame = previousFrame;
 
         setTitle("Customer Registration");
-        setSize(900, 790);
+        setSize(720, 650);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setResizable(false);
 
         createInterface();
 
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(
-                java.awt.event.WindowEvent event
-            ) {
-                returnToLogin();
+        addWindowListener(
+            new java.awt.event.WindowAdapter() {
+                public void windowClosing(
+                    java.awt.event.WindowEvent event
+                ) {
+                    returnToLogin();
+                }
             }
-        });
+        );
     }
 
     private void createInterface() {
-        JPanel background = new JPanel(
-            new GridBagLayout()
+        JPanel mainPanel =
+            new JPanel(new BorderLayout(15, 15));
+
+        mainPanel.setBackground(
+            new Color(238, 244, 250)
         );
 
-        background.setBackground(
-            new Color(235, 243, 251)
-        );
-
-        background.setBorder(
-            new EmptyBorder(25, 35, 25, 35)
-        );
-
-        JPanel card = new JPanel(
-            new BorderLayout(15, 20)
-        );
-
-        card.setBackground(Color.WHITE);
-        card.setPreferredSize(
-            new Dimension(780, 680)
-        );
-
-        card.setBorder(
-            BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(
-                    new Color(205, 218, 232)
-                ),
-                new EmptyBorder(30, 55, 30, 55)
-            )
-        );
-
-        JPanel headingPanel = new JPanel();
-        headingPanel.setOpaque(false);
-        headingPanel.setLayout(
-            new BoxLayout(
-                headingPanel,
-                BoxLayout.Y_AXIS
-            )
-        );
-
-        JLabel icon = new JLabel("\uD83D\uDC64");
-        icon.setFont(
-            new Font(
-                "Segoe UI Emoji",
-                Font.PLAIN,
-                43
-            )
-        );
-        icon.setAlignmentX(
-            Component.CENTER_ALIGNMENT
+        mainPanel.setBorder(
+            new EmptyBorder(25, 40, 25, 40)
         );
 
         JLabel title =
-            new JLabel("Create Account");
+            new JLabel(
+                "Create Account",
+                SwingConstants.CENTER
+            );
 
         title.setFont(
-            new Font("Arial", Font.BOLD, 31)
+            new Font("Arial", Font.BOLD, 30)
         );
 
         title.setForeground(
             new Color(15, 75, 140)
         );
 
-        title.setAlignmentX(
-            Component.CENTER_ALIGNMENT
+        JPanel formPanel =
+            new JPanel(new GridBagLayout());
+
+        formPanel.setBackground(Color.WHITE);
+
+        formPanel.setBorder(
+            BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(
+                    new Color(205, 216, 230)
+                ),
+                new EmptyBorder(25, 35, 25, 35)
+            )
         );
 
-        JLabel subtitle = new JLabel(
-            "Enter your details to create a customer account"
-        );
-
-        subtitle.setFont(
-            new Font("Arial", Font.PLAIN, 14)
-        );
-
-        subtitle.setForeground(
-            new Color(75, 85, 100)
-        );
-
-        subtitle.setAlignmentX(
-            Component.CENTER_ALIGNMENT
-        );
-
-        headingPanel.add(icon);
-        headingPanel.add(
-            Box.createVerticalStrut(5)
-        );
-        headingPanel.add(title);
-        headingPanel.add(
-            Box.createVerticalStrut(7)
-        );
-        headingPanel.add(subtitle);
-
-        JPanel formPanel = new JPanel(
-            new GridBagLayout()
-        );
-
-        formPanel.setOpaque(false);
-
-        GridBagConstraints constraints =
+        GridBagConstraints c =
             new GridBagConstraints();
 
-        constraints.fill =
-            GridBagConstraints.HORIZONTAL;
-
-        constraints.insets =
-            new Insets(8, 8, 8, 8);
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(8, 10, 8, 10);
 
         addInput(
             formPanel,
-            constraints,
+            c,
             "Full Name",
             nameField,
             0
@@ -170,7 +113,7 @@ public class RegistrationFrame extends JFrame {
 
         addInput(
             formPanel,
-            constraints,
+            c,
             "Email",
             emailField,
             1
@@ -178,7 +121,7 @@ public class RegistrationFrame extends JFrame {
 
         addInput(
             formPanel,
-            constraints,
+            c,
             "Phone",
             phoneField,
             2
@@ -186,7 +129,7 @@ public class RegistrationFrame extends JFrame {
 
         addInput(
             formPanel,
-            constraints,
+            c,
             "Password",
             passwordField,
             3
@@ -194,102 +137,88 @@ public class RegistrationFrame extends JFrame {
 
         addInput(
             formPanel,
-            constraints,
+            c,
             "Confirm Password",
             confirmField,
             4
         );
 
         showPasswordBox.setOpaque(false);
+        showPasswordBox.setFocusPainted(false);
 
         showPasswordBox.setFont(
             new Font("Arial", Font.PLAIN, 13)
         );
 
-        constraints.gridx = 1;
-        constraints.gridy = 5;
-        constraints.weightx = 1;
-        constraints.insets =
-            new Insets(3, 8, 8, 8);
+        c.gridx = 1;
+        c.gridy = 5;
+        c.gridwidth = 1;
 
-        formPanel.add(
-            showPasswordBox,
-            constraints
-        );
-
-        JButton backButton =
-            createButton("BACK");
+        formPanel.add(showPasswordBox, c);
 
         JButton clearButton =
-            createButton("CLEAR");
+            makeButton("CLEAR");
 
-        backButton.setBackground(
-            new Color(90, 105, 120)
-        );
+        JButton backButton =
+            makeButton("BACK");
 
-        clearButton.setBackground(
-            new Color(50, 130, 175)
-        );
-
-        JPanel buttonPanel = new JPanel(
-            new FlowLayout(
-                FlowLayout.CENTER,
-                14,
-                0
-            )
-        );
+        JPanel buttonPanel =
+            new JPanel(
+                new FlowLayout(
+                    FlowLayout.CENTER,
+                    10,
+                    0
+                )
+            );
 
         buttonPanel.setOpaque(false);
-        buttonPanel.setPreferredSize(
-            new Dimension(680, 55)
-        );
-
         buttonPanel.add(backButton);
         buttonPanel.add(clearButton);
         buttonPanel.add(registerButton);
 
-        card.add(
-            headingPanel,
+        c.gridx = 0;
+        c.gridy = 6;
+        c.gridwidth = 2;
+        c.insets = new Insets(20, 10, 5, 10);
+
+        formPanel.add(buttonPanel, c);
+
+        mainPanel.add(
+            title,
             BorderLayout.NORTH
         );
 
-        card.add(
+        mainPanel.add(
             formPanel,
             BorderLayout.CENTER
         );
 
-        card.add(
-            buttonPanel,
-            BorderLayout.SOUTH
-        );
-
-        background.add(card);
-        setContentPane(background);
+        setContentPane(mainPanel);
 
         showPasswordBox.addActionListener(
             event -> showOrHidePasswords()
         );
 
-        backButton.addActionListener(
-            event -> returnToLogin()
+        registerButton.addActionListener(
+            event -> registerCustomer()
         );
 
         clearButton.addActionListener(
             event -> clearFields()
         );
 
-        registerButton.addActionListener(
-            event -> registerAccount()
+        backButton.addActionListener(
+            event -> returnToLogin()
         );
 
-        getRootPane().setDefaultButton(
-            registerButton
+        confirmField.addActionListener(
+            event -> registerCustomer()
         );
     }
 
     private void addInput(
         JPanel panel,
-        GridBagConstraints constraints,
+        GridBagConstraints c,
         String labelText,
         JComponent input,
         int row
@@ -301,49 +230,42 @@ public class RegistrationFrame extends JFrame {
             new Font("Arial", Font.BOLD, 14)
         );
 
-        label.setForeground(
-            new Color(25, 35, 50)
+        input.setPreferredSize(
+            new Dimension(350, 42)
         );
 
         input.setFont(
             new Font("Arial", Font.PLAIN, 14)
         );
 
-        input.setPreferredSize(
-            new Dimension(440, 40)
-        );
+        c.gridy = row;
+        c.gridwidth = 1;
 
-        constraints.gridy = row;
+        c.gridx = 0;
+        c.weightx = 0;
 
-        constraints.gridx = 0;
-        constraints.weightx = 0;
-        constraints.insets =
-            new Insets(8, 8, 8, 18);
+        panel.add(label, c);
 
-        panel.add(label, constraints);
+        c.gridx = 1;
+        c.weightx = 1;
 
-        constraints.gridx = 1;
-        constraints.weightx = 1;
-        constraints.insets =
-            new Insets(8, 8, 8, 8);
-
-        panel.add(input, constraints);
+        panel.add(input, c);
     }
 
-    private JButton createButton(String text) {
+    private static JButton makeButton(
+        String text
+    ) {
         JButton button =
             new JButton(text);
 
-        button.setPreferredSize(
-            new Dimension(195, 44)
-        );
+        button.setUI(new BasicButtonUI());
 
-        button.setMinimumSize(
-            new Dimension(195, 44)
+        button.setPreferredSize(
+            new Dimension(165, 42)
         );
 
         button.setBackground(
-            new Color(35, 110, 200)
+            new Color(25, 105, 195)
         );
 
         button.setForeground(Color.WHITE);
@@ -367,8 +289,8 @@ public class RegistrationFrame extends JFrame {
     private void showOrHidePasswords() {
         char echoCharacter =
             showPasswordBox.isSelected()
-                ? (char) 0
-                : '\u2022';
+                ? '\0'
+                : '•';
 
         passwordField.setEchoChar(
             echoCharacter
@@ -379,7 +301,7 @@ public class RegistrationFrame extends JFrame {
         );
     }
 
-    private void registerAccount() {
+    private void registerCustomer() {
         String fullName =
             nameField.getText().trim();
 
@@ -407,7 +329,7 @@ public class RegistrationFrame extends JFrame {
                 || confirmPassword.isEmpty()
         ) {
             showWarning(
-                "Complete all registration fields.",
+                "Complete all registration details.",
                 "Missing Information"
             );
             return;
@@ -433,11 +355,7 @@ public class RegistrationFrame extends JFrame {
             return;
         }
 
-        if (
-            !phone.matches(
-                "[0-9+\\- ]{7,20}"
-            )
-        ) {
+        if (!phone.matches("[0-9+\\- ]{7,20}")) {
             showWarning(
                 "Enter a valid phone number.",
                 "Invalid Phone"
@@ -551,6 +469,7 @@ public class RegistrationFrame extends JFrame {
                     );
                 }
             }
+            }
 
             JOptionPane.showMessageDialog(
                 this,
@@ -570,8 +489,6 @@ public class RegistrationFrame extends JFrame {
                 "Registration Error",
                 JOptionPane.ERROR_MESSAGE
             );
-
-            exception.printStackTrace();
 
         } finally {
             registerButton.setEnabled(true);
