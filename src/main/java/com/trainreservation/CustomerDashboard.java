@@ -1,9 +1,24 @@
 package com.trainreservation;
 
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicButtonUI;
-import java.awt.*;
 
 public class CustomerDashboard extends JFrame {
 
@@ -90,17 +105,17 @@ public class CustomerDashboard extends JFrame {
 
         JPanel menu =
             new JPanel(
-                new GridLayout(5, 1, 0, 12)
+                new GridLayout(3, 1, 0, 15)
             );
 
         menu.setBackground(Color.WHITE);
 
         menu.setBorder(
-            new EmptyBorder(25, 22, 25, 22)
+            new EmptyBorder(70, 22, 70, 22)
         );
 
         menu.setPreferredSize(
-            new Dimension(260, 0)
+            new Dimension(280, 0)
         );
 
         JButton searchButton =
@@ -109,19 +124,15 @@ public class CustomerDashboard extends JFrame {
         JButton bookingsButton =
             makeButton("My Bookings");
 
-        JButton profileButton =
-            makeButton("My Profile");
-
-        JButton passwordButton =
-            makeButton("Change Password");
-
         JButton logoutButton =
             makeButton("Logout");
 
+        logoutButton.setBackground(
+            new Color(190, 55, 55)
+        );
+
         menu.add(searchButton);
         menu.add(bookingsButton);
-        menu.add(profileButton);
-        menu.add(passwordButton);
         menu.add(logoutButton);
 
         JPanel content =
@@ -149,7 +160,7 @@ public class CustomerDashboard extends JFrame {
 
         JLabel title =
             new JLabel(
-                "Customer Dashboard"
+                "Customer Booking Dashboard"
             );
 
         title.setFont(
@@ -170,7 +181,7 @@ public class CustomerDashboard extends JFrame {
 
         JLabel subtitle =
             new JLabel(
-                "Search trains and manage your bookings"
+                "Search schedules and manage your bookings"
             );
 
         subtitle.setFont(
@@ -189,13 +200,41 @@ public class CustomerDashboard extends JFrame {
             Component.CENTER_ALIGNMENT
         );
 
+        JLabel bookingInformation =
+            new JLabel(
+                "Passenger details, fare calculation, "
+                    + "confirmation and cancellation"
+            );
+
+        bookingInformation.setFont(
+            new Font(
+                "Arial",
+                Font.PLAIN,
+                14
+            )
+        );
+
+        bookingInformation.setForeground(
+            new Color(100, 108, 120)
+        );
+
+        bookingInformation.setAlignmentX(
+            Component.CENTER_ALIGNMENT
+        );
+
         welcomePanel.add(title);
 
         welcomePanel.add(
-            Box.createVerticalStrut(10)
+            Box.createVerticalStrut(12)
         );
 
         welcomePanel.add(subtitle);
+
+        welcomePanel.add(
+            Box.createVerticalStrut(8)
+        );
+
+        welcomePanel.add(bookingInformation);
 
         content.add(welcomePanel);
 
@@ -239,14 +278,6 @@ public class CustomerDashboard extends JFrame {
         bookingsButton.addActionListener(
             event -> openMyBookings()
         );
-
-        profileButton.addActionListener(
-            event -> openMyProfile()
-        );
-
-       passwordButton.addActionListener(
-    event -> openChangePassword()
-);
 
         logoutButton.addActionListener(
             event -> logout()
@@ -305,89 +336,40 @@ public class CustomerDashboard extends JFrame {
         }
     }
 
-    private void openMyProfile() {
-        try {
-            MyProfileFrame profileFrame =
-                new MyProfileFrame(
-                    this,
-                    customerId
-                );
+    private JButton makeButton(String text) {
+        JButton button =
+            new JButton(text);
 
-            profileFrame.setVisible(true);
-            setVisible(false);
-
-        } catch (Throwable error) {
-            error.printStackTrace();
-
-            JOptionPane.showMessageDialog(
-                this,
-                "Could not open My Profile.\n"
-                    + error.getClass().getSimpleName()
-                    + ": "
-                    + error.getMessage(),
-                "Profile Error",
-                JOptionPane.ERROR_MESSAGE
-            );
-        }
-    }
-
-private void openChangePassword() {
-    try {
-        ChangePasswordFrame passwordFrame =
-            new ChangePasswordFrame(
-                this,
-                customerId
-            );
-
-        passwordFrame.setVisible(true);
-        setVisible(false);
-
-    } catch (Throwable error) {
-        error.printStackTrace();
-
-        JOptionPane.showMessageDialog(
-            this,
-            "Could not open Change Password.\n"
-                + error.getClass().getSimpleName()
-                + ": "
-                + error.getMessage(),
-            "Password Error",
-            JOptionPane.ERROR_MESSAGE
+        button.setUI(
+            new BasicButtonUI()
         );
+
+        button.setBackground(
+            new Color(25, 105, 195)
+        );
+
+        button.setForeground(Color.WHITE);
+
+        button.setFont(
+            new Font(
+                "Arial",
+                Font.BOLD,
+                14
+            )
+        );
+
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+
+        button.setCursor(
+            Cursor.getPredefinedCursor(
+                Cursor.HAND_CURSOR
+            )
+        );
+
+        return button;
     }
-}
 
-private JButton makeButton(String text) {
-    JButton button =
-        new JButton(text);
-
-    button.setUI(
-        new BasicButtonUI()
-    );
-
-    button.setBackground(
-        new Color(25, 105, 195)
-    );
-
-    button.setForeground(Color.WHITE);
-
-    button.setFont(
-        new Font("Arial", Font.BOLD, 14)
-    );
-
-    button.setFocusPainted(false);
-    button.setBorderPainted(false);
-
-    button.setCursor(
-        Cursor.getPredefinedCursor(
-            Cursor.HAND_CURSOR
-        )
-    );
-
-    return button;
-}
-    
-    
     private void logout() {
         int answer =
             JOptionPane.showConfirmDialog(
