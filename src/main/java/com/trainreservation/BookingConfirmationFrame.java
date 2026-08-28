@@ -1,4 +1,4 @@
-package com.trainreservation.ui;
+package com.trainreservation;
 
 import com.trainreservation.CustomerDashboard;
 import com.trainreservation.DatabaseConnection;

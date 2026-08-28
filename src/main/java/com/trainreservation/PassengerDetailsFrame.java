@@ -14,26 +14,37 @@ import java.util.List;
 
 public class PassengerDetailsFrame extends JFrame {
 
+    private static final int MAX_PASSENGERS = 10;
+
     private final JFrame previousFrame;
     private final long customerId;
     private final long scheduleId;
 
-    private final JTextField nameField = new JTextField();
-    private final JTextField nicField = new JTextField();
-    private final JTextField ageField = new JTextField();
+    private final JTextField nameField =
+        new JTextField();
+
+    private final JTextField nicField =
+        new JTextField();
+
+    private final JTextField ageField =
+        new JTextField();
 
     private final JComboBox<String> genderBox =
-        new JComboBox<>(new String[]{
-            "Male",
-            "Female",
-            "Other"
-        });
+        new JComboBox<>(
+            new String[]{
+                "Male",
+                "Female",
+                "Other"
+            }
+        );
 
     private final JComboBox<String> classBox =
-        new JComboBox<>(new String[]{
-            "First Class",
-            "Second Class"
-        });
+        new JComboBox<>(
+            new String[]{
+                "First Class",
+                "Second Class"
+            }
+        );
 
     private final DefaultTableModel tableModel =
         new DefaultTableModel(
@@ -46,13 +57,22 @@ public class PassengerDetailsFrame extends JFrame {
             },
             0
         ) {
-            public boolean isCellEditable(int row, int column) {
+            
+            public boolean isCellEditable(
+                int row,
+                int column
+            ) {
                 return false;
             }
         };
 
     private final JTable passengerTable =
         new JTable(tableModel);
+
+    private final JLabel countLabel =
+        new JLabel(
+            "Passengers: 0 / " + MAX_PASSENGERS
+        );
 
     public PassengerDetailsFrame(
         JFrame previousFrame,
@@ -64,7 +84,7 @@ public class PassengerDetailsFrame extends JFrame {
         this.scheduleId = scheduleId;
 
         setTitle("Passenger Details");
-        setSize(950, 650);
+        setSize(1000, 700);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setResizable(false);
@@ -74,55 +94,118 @@ public class PassengerDetailsFrame extends JFrame {
         ((AbstractDocument) ageField.getDocument())
             .setDocumentFilter(new NumberFilter());
 
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(
-                java.awt.event.WindowEvent event
-            ) {
-                returnToPreviousPage();
+        addWindowListener(
+            new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosing(
+                    java.awt.event.WindowEvent event
+                ) {
+                    returnToPreviousPage();
+                }
             }
-        });
+        );
     }
 
     private void createInterface() {
-        JPanel mainPanel = new JPanel(new BorderLayout(15, 15));
-        mainPanel.setBackground(new Color(238, 244, 250));
-        mainPanel.setBorder(new EmptyBorder(25, 30, 25, 30));
+        JPanel mainPanel =
+            new JPanel(new BorderLayout(15, 15));
 
-        JLabel title = new JLabel(
-            "Passenger Details",
-            SwingConstants.CENTER
+        mainPanel.setBackground(
+            new Color(238, 244, 250)
         );
 
-        title.setFont(new Font("Arial", Font.BOLD, 28));
-        title.setForeground(new Color(15, 75, 140));
+        mainPanel.setBorder(
+            new EmptyBorder(25, 30, 25, 30)
+        );
 
-        mainPanel.add(title, BorderLayout.NORTH);
+        JLabel title =
+            new JLabel(
+                "Passenger Details",
+                SwingConstants.CENTER
+            );
 
-        JPanel formPanel = new JPanel(new GridBagLayout());
+        title.setFont(
+            new Font("Arial", Font.BOLD, 28)
+        );
+
+        title.setForeground(
+            new Color(15, 75, 140)
+        );
+
+        JPanel formPanel =
+            new JPanel(new GridBagLayout());
+
         formPanel.setBackground(Color.WHITE);
-        formPanel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(
-                new Color(210, 220, 232)
-            ),
-            new EmptyBorder(18, 25, 18, 25)
-        ));
 
-        GridBagConstraints c = new GridBagConstraints();
+        formPanel.setBorder(
+            BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(
+                    new Color(210, 220, 232)
+                ),
+                new EmptyBorder(18, 25, 18, 25)
+            )
+        );
+
+        GridBagConstraints c =
+            new GridBagConstraints();
+
         c.fill = GridBagConstraints.HORIZONTAL;
         c.insets = new Insets(7, 8, 7, 8);
 
-        addInput(formPanel, c, "Passenger Name", nameField, 0);
-        addInput(formPanel, c, "NIC / Passport", nicField, 1);
-        addInput(formPanel, c, "Age", ageField, 2);
-        addInput(formPanel, c, "Gender", genderBox, 3);
-        addInput(formPanel, c, "Seat Class", classBox, 4);
-
-        JButton addButton = makeButton("ADD PASSENGER");
-        JButton clearButton = makeButton("CLEAR");
-
-        JPanel formButtons = new JPanel(
-            new FlowLayout(FlowLayout.CENTER, 12, 0)
+        addInput(
+            formPanel,
+            c,
+            "Passenger Name",
+            nameField,
+            0
         );
+
+        addInput(
+            formPanel,
+            c,
+            "NIC / Passport",
+            nicField,
+            1
+        );
+
+        addInput(
+            formPanel,
+            c,
+            "Age",
+            ageField,
+            2
+        );
+
+        addInput(
+            formPanel,
+            c,
+            "Gender",
+            genderBox,
+            3
+        );
+
+        addInput(
+            formPanel,
+            c,
+            "Seat Class",
+            classBox,
+            4
+        );
+
+        JButton addButton =
+            makeButton("ADD PASSENGER");
+
+        JButton clearButton =
+            makeButton("CLEAR FIELDS");
+
+        JPanel formButtons =
+            new JPanel(
+                new FlowLayout(
+                    FlowLayout.CENTER,
+                    12,
+                    0
+                )
+            );
 
         formButtons.setOpaque(false);
         formButtons.add(addButton);
@@ -132,56 +215,119 @@ public class PassengerDetailsFrame extends JFrame {
         c.gridy = 5;
         c.gridwidth = 2;
         c.insets = new Insets(15, 8, 3, 8);
+
         formPanel.add(formButtons, c);
 
-        passengerTable.setRowHeight(29);
+        passengerTable.setRowHeight(30);
+
         passengerTable.setSelectionMode(
             ListSelectionModel.SINGLE_SELECTION
         );
+
         passengerTable.setFont(
             new Font("Arial", Font.PLAIN, 13)
         );
 
-        passengerTable.getTableHeader().setFont(
-            new Font("Arial", Font.BOLD, 13)
-        );
+        passengerTable
+            .getTableHeader()
+            .setFont(
+                new Font(
+                    "Arial",
+                    Font.BOLD,
+                    13
+                )
+            );
 
-        passengerTable.getTableHeader().setBackground(
-            new Color(15, 75, 140)
-        );
+        passengerTable
+            .getTableHeader()
+            .setBackground(
+                new Color(15, 75, 140)
+            );
 
-        passengerTable.getTableHeader().setForeground(
-            Color.WHITE
-        );
+      
+        passengerTable
+            .getTableHeader()
+            .setForeground(Color.BLACK);
+
+        passengerTable
+            .getTableHeader()
+            .setOpaque(true);
+
+        passengerTable
+            .getTableHeader()
+            .setPreferredSize(
+                new Dimension(0, 35)
+            );
 
         JScrollPane scrollPane =
             new JScrollPane(passengerTable);
 
+        countLabel.setFont(
+            new Font("Arial", Font.BOLD, 14)
+        );
+
+        countLabel.setForeground(
+            new Color(15, 75, 140)
+        );
+
         JButton removeButton =
             makeButton("REMOVE SELECTED");
-
-        JButton continueButton =
-            makeButton("CONTINUE");
 
         JButton backButton =
             makeButton("BACK");
 
-        JPanel bottomButtons = new JPanel(
-            new FlowLayout(FlowLayout.RIGHT, 12, 0)
-        );
+        JButton continueButton =
+            makeButton("CONTINUE");
+
+        JPanel tableTopPanel =
+            new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+        tableTopPanel.setOpaque(false);
+        tableTopPanel.add(countLabel);
+
+        JPanel bottomButtons =
+            new JPanel(
+                new FlowLayout(
+                    FlowLayout.RIGHT,
+                    12,
+                    0
+                )
+            );
 
         bottomButtons.setOpaque(false);
         bottomButtons.add(removeButton);
         bottomButtons.add(backButton);
         bottomButtons.add(continueButton);
 
-        JPanel content = new JPanel(new BorderLayout(12, 12));
+        JPanel tablePanel =
+            new JPanel(new BorderLayout(8, 8));
+
+        tablePanel.setOpaque(false);
+        tablePanel.add(
+            tableTopPanel,
+            BorderLayout.NORTH
+        );
+
+        tablePanel.add(
+            scrollPane,
+            BorderLayout.CENTER
+        );
+
+        tablePanel.add(
+            bottomButtons,
+            BorderLayout.SOUTH
+        );
+
+        JPanel content =
+            new JPanel(new BorderLayout(12, 12));
+
         content.setOpaque(false);
         content.add(formPanel, BorderLayout.NORTH);
-        content.add(scrollPane, BorderLayout.CENTER);
-        content.add(bottomButtons, BorderLayout.SOUTH);
+        content.add(tablePanel, BorderLayout.CENTER);
 
+        mainPanel.add(title, BorderLayout.NORTH);
         mainPanel.add(content, BorderLayout.CENTER);
+
         setContentPane(mainPanel);
 
         addButton.addActionListener(
@@ -212,44 +358,91 @@ public class PassengerDetailsFrame extends JFrame {
         JComponent input,
         int row
     ) {
-        JLabel label = new JLabel(labelText);
-        label.setFont(new Font("Arial", Font.BOLD, 13));
+        JLabel label =
+            new JLabel(labelText);
 
-        input.setPreferredSize(new Dimension(350, 37));
-        input.setFont(new Font("Arial", Font.PLAIN, 13));
+        label.setFont(
+            new Font("Arial", Font.BOLD, 13)
+        );
+
+        input.setPreferredSize(
+            new Dimension(400, 38)
+        );
+
+        input.setFont(
+            new Font("Arial", Font.PLAIN, 13)
+        );
 
         c.gridy = row;
         c.gridwidth = 1;
+
         c.gridx = 0;
         c.weightx = 0;
+
         panel.add(label, c);
 
         c.gridx = 1;
         c.weightx = 1;
+
         panel.add(input, c);
     }
 
-    private JButton makeButton(String text) {
-        JButton button = new JButton(text);
+    private static JButton makeButton(String text) {
+        JButton button =
+            new JButton(text);
 
         button.setUI(new BasicButtonUI());
-        button.setPreferredSize(new Dimension(165, 40));
-        button.setBackground(new Color(25, 105, 195));
+
+        button.setPreferredSize(
+            new Dimension(175, 42)
+        );
+
+        button.setBackground(
+            new Color(25, 105, 195)
+        );
+
         button.setForeground(Color.WHITE);
-        button.setFont(new Font("Arial", Font.BOLD, 12));
+
+        button.setFont(
+            new Font("Arial", Font.BOLD, 12)
+        );
+
         button.setFocusPainted(false);
         button.setBorderPainted(false);
+
         button.setCursor(
-            Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+            Cursor.getPredefinedCursor(
+                Cursor.HAND_CURSOR
+            )
         );
 
         return button;
     }
 
     private void addPassenger() {
-        String name = nameField.getText().trim();
-        String nic = nicField.getText().trim();
-        String ageText = ageField.getText().trim();
+        if (
+            tableModel.getRowCount()
+                >= MAX_PASSENGERS
+        ) {
+            JOptionPane.showMessageDialog(
+                this,
+                "A maximum of "
+                    + MAX_PASSENGERS
+                    + " passengers can be added.",
+                "Passenger Limit",
+                JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        String name =
+            nameField.getText().trim();
+
+        String nic =
+            nicField.getText().trim();
+
+        String ageText =
+            ageField.getText().trim();
 
         if (
             name.isEmpty()
@@ -265,7 +458,20 @@ public class PassengerDetailsFrame extends JFrame {
             return;
         }
 
-        int age = Integer.parseInt(ageText);
+        int age;
+
+        try {
+            age = Integer.parseInt(ageText);
+
+        } catch (NumberFormatException exception) {
+            JOptionPane.showMessageDialog(
+                this,
+                "Age must contain numbers only.",
+                "Invalid Age",
+                JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
 
         if (age < 1 || age > 120) {
             JOptionPane.showMessageDialog(
@@ -277,9 +483,15 @@ public class PassengerDetailsFrame extends JFrame {
             return;
         }
 
-        for (int row = 0; row < tableModel.getRowCount(); row++) {
+        for (
+            int row = 0;
+            row < tableModel.getRowCount();
+            row++
+        ) {
             String savedNic =
-                tableModel.getValueAt(row, 1).toString();
+                tableModel
+                    .getValueAt(row, 1)
+                    .toString();
 
             if (savedNic.equalsIgnoreCase(nic)) {
                 JOptionPane.showMessageDialog(
@@ -292,14 +504,17 @@ public class PassengerDetailsFrame extends JFrame {
             }
         }
 
-        tableModel.addRow(new Object[]{
-            name,
-            nic,
-            age,
-            genderBox.getSelectedItem(),
-            classBox.getSelectedItem()
-        });
+        tableModel.addRow(
+            new Object[]{
+                name,
+                nic,
+                age,
+                genderBox.getSelectedItem(),
+                classBox.getSelectedItem()
+            }
+        );
 
+        updatePassengerCount();
         clearFields();
     }
 
@@ -317,7 +532,27 @@ public class PassengerDetailsFrame extends JFrame {
             return;
         }
 
-        tableModel.removeRow(selectedRow);
+        int answer =
+            JOptionPane.showConfirmDialog(
+                this,
+                "Remove the selected passenger?",
+                "Confirm Removal",
+                JOptionPane.YES_NO_OPTION
+            );
+
+        if (answer == JOptionPane.YES_OPTION) {
+            tableModel.removeRow(selectedRow);
+            updatePassengerCount();
+        }
+    }
+
+    private void updatePassengerCount() {
+        countLabel.setText(
+            "Passengers: "
+                + tableModel.getRowCount()
+                + " / "
+                + MAX_PASSENGERS
+        );
     }
 
     private void clearFields() {
@@ -326,7 +561,7 @@ public class PassengerDetailsFrame extends JFrame {
         ageField.setText("");
         genderBox.setSelectedIndex(0);
         classBox.setSelectedIndex(0);
-        nameField.requestFocus();
+        nameField.requestFocusInWindow();
     }
 
     private void continueToConfirmation() {
@@ -340,35 +575,66 @@ public class PassengerDetailsFrame extends JFrame {
             return;
         }
 
-        List<Passenger> passengers = new ArrayList<>();
+        List<Passenger> passengers =
+            new ArrayList<>();
 
-        for (int row = 0; row < tableModel.getRowCount(); row++) {
-            passengers.add(new Passenger(
-                tableModel.getValueAt(row, 0).toString(),
-                tableModel.getValueAt(row, 1).toString(),
-                Integer.parseInt(
-                    tableModel.getValueAt(row, 2).toString()
-                ),
-                tableModel.getValueAt(row, 3).toString(),
-                tableModel.getValueAt(row, 4).toString()
-            ));
+        for (
+            int row = 0;
+            row < tableModel.getRowCount();
+            row++
+        ) {
+            passengers.add(
+                new Passenger(
+                    tableModel
+                        .getValueAt(row, 0)
+                        .toString(),
+
+                    tableModel
+                        .getValueAt(row, 1)
+                        .toString(),
+
+                    Integer.parseInt(
+                        tableModel
+                            .getValueAt(row, 2)
+                            .toString()
+                    ),
+
+                    tableModel
+                        .getValueAt(row, 3)
+                        .toString(),
+
+                    tableModel
+                        .getValueAt(row, 4)
+                        .toString()
+                )
+            );
         }
 
-        JOptionPane.showMessageDialog(
-            this,
-            passengers.size()
-                + " passenger(s) added.\n"
-                + "Booking Confirmation page will open next.",
-            "Passenger Details Complete",
-            JOptionPane.INFORMATION_MESSAGE
-        );
+        try {
+            BookingConfirmationFrame confirmationFrame =
+                new BookingConfirmationFrame(
+                    this,
+                    customerId,
+                    scheduleId,
+                    passengers
+                );
 
-        System.out.println(
-            "Customer: " + customerId
-                + ", Schedule: " + scheduleId
-        );
+            confirmationFrame.setVisible(true);
+            setVisible(false);
 
-        // BookingConfirmationFrame will be connected next.
+        } catch (Throwable error) {
+            error.printStackTrace();
+
+            JOptionPane.showMessageDialog(
+                this,
+                "Could not open booking confirmation.\n"
+                    + error.getClass().getSimpleName()
+                    + ": "
+                    + error.getMessage(),
+                "Booking Error",
+                JOptionPane.ERROR_MESSAGE
+            );
+        }
     }
 
     private void returnToPreviousPage() {
@@ -423,15 +689,21 @@ public class PassengerDetailsFrame extends JFrame {
         }
     }
 
-    private static class NumberFilter extends DocumentFilter {
+    private static class NumberFilter
+        extends DocumentFilter {
 
+        
         public void insertString(
             FilterBypass filter,
             int offset,
             String text,
             AttributeSet attributes
         ) throws BadLocationException {
-            if (text != null && text.matches("\\d+")) {
+
+            if (
+                text != null
+                    && text.matches("\\d+")
+            ) {
                 filter.insertString(
                     offset,
                     text,
@@ -440,6 +712,7 @@ public class PassengerDetailsFrame extends JFrame {
             }
         }
 
+        
         public void replace(
             FilterBypass filter,
             int offset,
@@ -447,6 +720,7 @@ public class PassengerDetailsFrame extends JFrame {
             String text,
             AttributeSet attributes
         ) throws BadLocationException {
+
             if (
                 text == null
                     || text.isEmpty()
@@ -462,4 +736,3 @@ public class PassengerDetailsFrame extends JFrame {
         }
     }
 }
-
