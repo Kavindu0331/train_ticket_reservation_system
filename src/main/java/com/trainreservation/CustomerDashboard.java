@@ -23,11 +23,7 @@ public class CustomerDashboard extends JFrame {
 
         setSize(1000, 650);
         setLocationRelativeTo(null);
-
-        setDefaultCloseOperation(
-            EXIT_ON_CLOSE
-        );
-
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
 
         createInterface();
@@ -236,43 +232,21 @@ public class CustomerDashboard extends JFrame {
 
         setContentPane(mainPanel);
 
-        /*
-         * Correct button name:
-         * searchButton, not scheduleButton.
-         */
         searchButton.addActionListener(
             event -> openScheduleSearch()
         );
 
         bookingsButton.addActionListener(
-            event ->
-                JOptionPane.showMessageDialog(
-                    this,
-                    "My Bookings page will open here.",
-                    "My Bookings",
-                    JOptionPane.INFORMATION_MESSAGE
-                )
+            event -> openMyBookings()
         );
 
         profileButton.addActionListener(
-            event ->
-                JOptionPane.showMessageDialog(
-                    this,
-                    "Customer Profile page will open here.",
-                    "My Profile",
-                    JOptionPane.INFORMATION_MESSAGE
-                )
+            event -> openMyProfile()
         );
 
-        passwordButton.addActionListener(
-            event ->
-                JOptionPane.showMessageDialog(
-                    this,
-                    "Change Password page will open here.",
-                    "Change Password",
-                    JOptionPane.INFORMATION_MESSAGE
-                )
-        );
+       passwordButton.addActionListener(
+    event -> openChangePassword()
+);
 
         logoutButton.addActionListener(
             event -> logout()
@@ -288,11 +262,6 @@ public class CustomerDashboard extends JFrame {
                 );
 
             scheduleFrame.setVisible(true);
-
-            /*
-             * Hide dashboard only after the schedule
-             * window has been created successfully.
-             */
             setVisible(false);
 
         } catch (Throwable error) {
@@ -310,40 +279,115 @@ public class CustomerDashboard extends JFrame {
         }
     }
 
-    private JButton makeButton(String text) {
-        JButton button =
-            new JButton(text);
+    private void openMyBookings() {
+        try {
+            MyBookingsFrame bookingsFrame =
+                new MyBookingsFrame(
+                    this,
+                    customerId
+                );
 
-        button.setUI(
-            new BasicButtonUI()
-        );
+            bookingsFrame.setVisible(true);
+            setVisible(false);
 
-        button.setBackground(
-            new Color(25, 105, 195)
-        );
+        } catch (Throwable error) {
+            error.printStackTrace();
 
-        button.setForeground(Color.WHITE);
-
-        button.setFont(
-            new Font(
-                "Arial",
-                Font.BOLD,
-                14
-            )
-        );
-
-        button.setFocusPainted(false);
-        button.setBorderPainted(false);
-
-        button.setCursor(
-            Cursor.getPredefinedCursor(
-                Cursor.HAND_CURSOR
-            )
-        );
-
-        return button;
+            JOptionPane.showMessageDialog(
+                this,
+                "Could not open My Bookings.\n"
+                    + error.getClass().getSimpleName()
+                    + ": "
+                    + error.getMessage(),
+                "My Bookings Error",
+                JOptionPane.ERROR_MESSAGE
+            );
+        }
     }
 
+    private void openMyProfile() {
+        try {
+            MyProfileFrame profileFrame =
+                new MyProfileFrame(
+                    this,
+                    customerId
+                );
+
+            profileFrame.setVisible(true);
+            setVisible(false);
+
+        } catch (Throwable error) {
+            error.printStackTrace();
+
+            JOptionPane.showMessageDialog(
+                this,
+                "Could not open My Profile.\n"
+                    + error.getClass().getSimpleName()
+                    + ": "
+                    + error.getMessage(),
+                "Profile Error",
+                JOptionPane.ERROR_MESSAGE
+            );
+        }
+    }
+
+private void openChangePassword() {
+    try {
+        ChangePasswordFrame passwordFrame =
+            new ChangePasswordFrame(
+                this,
+                customerId
+            );
+
+        passwordFrame.setVisible(true);
+        setVisible(false);
+
+    } catch (Throwable error) {
+        error.printStackTrace();
+
+        JOptionPane.showMessageDialog(
+            this,
+            "Could not open Change Password.\n"
+                + error.getClass().getSimpleName()
+                + ": "
+                + error.getMessage(),
+            "Password Error",
+            JOptionPane.ERROR_MESSAGE
+        );
+    }
+}
+
+private JButton makeButton(String text) {
+    JButton button =
+        new JButton(text);
+
+    button.setUI(
+        new BasicButtonUI()
+    );
+
+    button.setBackground(
+        new Color(25, 105, 195)
+    );
+
+    button.setForeground(Color.WHITE);
+
+    button.setFont(
+        new Font("Arial", Font.BOLD, 14)
+    );
+
+    button.setFocusPainted(false);
+    button.setBorderPainted(false);
+
+    button.setCursor(
+        Cursor.getPredefinedCursor(
+            Cursor.HAND_CURSOR
+        )
+    );
+
+    return button;
+}
+    
+    
     private void logout() {
         int answer =
             JOptionPane.showConfirmDialog(
@@ -367,7 +411,7 @@ public class CustomerDashboard extends JFrame {
         return customerId;
     }
 
-        public String getCustomerName() {
+    public String getCustomerName() {
         return customerName;
     }
 }

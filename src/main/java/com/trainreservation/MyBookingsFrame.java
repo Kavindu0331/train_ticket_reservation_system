@@ -258,26 +258,27 @@ public class MyBookingsFrame extends JFrame {
     }
 
     private void loadBookings() {
-        String sql = """
-            SELECT
-                b.booking_id,
-                b.pnr,
-                t.train_number,
-                t.train_name,
-                s.departure_station,
-                s.arrival_station,
-                s.journey_date,
-                b.passenger_count,
-                b.total_fare,
-                b.status
-            FROM bookings b
-            JOIN schedules s
-                ON s.schedule_id = b.schedule_id
-            JOIN trains t
-                ON t.train_id = s.train_id
-            WHERE b.user_id = ?
-            ORDER BY b.booking_id DESC
-            """;
+       String sql = """
+    SELECT
+        b.booking_id,
+        b.pnr,
+        t.train_number,
+        t.train_name,
+        s.departure_station,
+        s.arrival_station,
+        s.journey_date,
+        b.passenger_count,
+        b.total_fare,
+        b.status
+    FROM bookings b
+    JOIN schedules s
+        ON s.schedule_id = b.schedule_id
+    JOIN trains t
+        ON t.train_id = s.train_id
+    WHERE b.user_id = ?
+      AND UPPER(b.status) <> 'CANCELLED'
+    ORDER BY b.booking_id DESC
+    """;
 
         tableModel.setRowCount(0);
 
