@@ -12,10 +12,10 @@ import java.sql.ResultSet;
 public class LoginFrame extends JFrame {
 
     private static final Color DARK_BLUE =
-        new Color(8, 63, 123);
+        new Color(7, 61, 121);
 
     private static final Color LIGHT_BLUE =
-        new Color(0, 174, 214);
+        new Color(0, 180, 215);
 
     private static final Color PRIMARY_BLUE =
         new Color(28, 101, 215);
@@ -35,13 +35,11 @@ public class LoginFrame extends JFrame {
 
     private void initializeWindow() {
         setTitle("Train Reservation System");
-        setSize(940, 800);
+        setSize(920, 740);
         setLocationRelativeTo(null);
-
         setDefaultCloseOperation(
             JFrame.EXIT_ON_CLOSE
         );
-
         setResizable(false);
     }
 
@@ -57,7 +55,7 @@ public class LoginFrame extends JFrame {
             new LoginCard();
 
         loginCard.setPreferredSize(
-            new Dimension(570, 670)
+            new Dimension(550, 620)
         );
 
         loginCard.setLayout(
@@ -66,10 +64,10 @@ public class LoginFrame extends JFrame {
 
         loginCard.setBorder(
             new EmptyBorder(
-                32,
-                55,
-                30,
-                55
+                28,
+                50,
+                27,
+                50
             )
         );
 
@@ -110,15 +108,15 @@ public class LoginFrame extends JFrame {
             new TrainIconPanel();
 
         trainIcon.setPreferredSize(
-            new Dimension(90, 90)
+            new Dimension(82, 82)
         );
 
         trainIcon.setMinimumSize(
-            new Dimension(90, 90)
+            new Dimension(82, 82)
         );
 
         trainIcon.setMaximumSize(
-            new Dimension(90, 90)
+            new Dimension(82, 82)
         );
 
         trainIcon.setAlignmentX(
@@ -134,7 +132,7 @@ public class LoginFrame extends JFrame {
             new Font(
                 "Arial",
                 Font.BOLD,
-                29
+                28
             )
         );
 
@@ -153,7 +151,7 @@ public class LoginFrame extends JFrame {
             new Font(
                 "Arial",
                 Font.PLAIN,
-                16
+                15
             )
         );
 
@@ -168,13 +166,13 @@ public class LoginFrame extends JFrame {
         headerPanel.add(trainIcon);
 
         headerPanel.add(
-            Box.createVerticalStrut(8)
+            Box.createVerticalStrut(7)
         );
 
         headerPanel.add(titleLabel);
 
         headerPanel.add(
-            Box.createVerticalStrut(7)
+            Box.createVerticalStrut(6)
         );
 
         headerPanel.add(subtitleLabel);
@@ -192,7 +190,7 @@ public class LoginFrame extends JFrame {
 
         formPanel.setBorder(
             new EmptyBorder(
-                27,
+                20,
                 0,
                 0,
                 0
@@ -214,6 +212,10 @@ public class LoginFrame extends JFrame {
         emailField =
             createTextField();
 
+        emailField.setToolTipText(
+            "Enter your registered email"
+        );
+
         JLabel passwordLabel =
             createLabel("Password");
 
@@ -223,6 +225,10 @@ public class LoginFrame extends JFrame {
         configureTextField(passwordField);
 
         passwordField.setEchoChar('\u2022');
+
+        passwordField.setToolTipText(
+            "Enter your password"
+        );
 
         showPasswordBox =
             new JCheckBox("Show Password");
@@ -253,7 +259,7 @@ public class LoginFrame extends JFrame {
             constraints,
             0,
             0,
-            7
+            6
         );
 
         addFormComponent(
@@ -261,8 +267,8 @@ public class LoginFrame extends JFrame {
             emailField,
             constraints,
             1,
-            14,
-            17
+            0,
+            14
         );
 
         addFormComponent(
@@ -271,7 +277,7 @@ public class LoginFrame extends JFrame {
             constraints,
             2,
             0,
-            7
+            6
         );
 
         addFormComponent(
@@ -279,8 +285,8 @@ public class LoginFrame extends JFrame {
             passwordField,
             constraints,
             3,
-            14,
-            10
+            0,
+            8
         );
 
         addFormComponent(
@@ -289,7 +295,7 @@ public class LoginFrame extends JFrame {
             constraints,
             4,
             0,
-            21
+            17
         );
 
         addFormComponent(
@@ -297,8 +303,8 @@ public class LoginFrame extends JFrame {
             loginButton,
             constraints,
             5,
-            12,
-            11
+            9,
+            10
         );
 
         addFormComponent(
@@ -306,8 +312,8 @@ public class LoginFrame extends JFrame {
             createAccountButton,
             constraints,
             6,
-            10,
-            7
+            8,
+            6
         );
 
         addFormComponent(
@@ -315,19 +321,19 @@ public class LoginFrame extends JFrame {
             forgotPasswordButton,
             constraints,
             7,
-            4,
-            9
+            2,
+            7
         );
 
         constraints.gridy = 8;
-        constraints.ipady = 9;
+        constraints.ipady = 7;
 
         constraints.insets =
             new Insets(
                 0,
-                135,
+                125,
                 0,
-                135
+                125
             );
 
         formPanel.add(
@@ -371,7 +377,13 @@ public class LoginFrame extends JFrame {
         int bottomMargin
     ) {
         constraints.gridy = row;
-        constraints.ipady = verticalPadding;
+
+        if (component instanceof JTextField) {
+            constraints.ipady = 0;
+        } else {
+            constraints.ipady =
+                verticalPadding;
+        }
 
         constraints.insets =
             new Insets(
@@ -419,19 +431,22 @@ public class LoginFrame extends JFrame {
             new Font(
                 "Arial",
                 Font.PLAIN,
-                16
+                15
             )
         );
 
         textField.setPreferredSize(
-            new Dimension(460, 48)
+            new Dimension(440, 42)
         );
 
         textField.setMinimumSize(
-            new Dimension(460, 48)
+            new Dimension(440, 42)
         );
 
-        textField.setBackground(Color.WHITE);
+        textField.setBackground(
+            new Color(250, 252, 255)
+        );
+
         textField.setForeground(TEXT_COLOR);
         textField.setCaretColor(DARK_BLUE);
 
@@ -440,16 +455,16 @@ public class LoginFrame extends JFrame {
                 BorderFactory.createLineBorder(
                     new Color(
                         175,
-                        190,
-                        210
+                        193,
+                        215
                     ),
                     1
                 ),
                 new EmptyBorder(
-                    8,
-                    12,
-                    8,
-                    12
+                    6,
+                    11,
+                    6,
+                    11
                 )
             )
         );
@@ -497,7 +512,7 @@ public class LoginFrame extends JFrame {
         );
 
         button.setPreferredSize(
-            new Dimension(460, 47)
+            new Dimension(440, 43)
         );
 
         button.setFocusPainted(false);
@@ -724,16 +739,19 @@ public class LoginFrame extends JFrame {
                 );
             }
 
-        } catch (Exception exception) {
+        } catch (Throwable error) {
             JOptionPane.showMessageDialog(
                 this,
                 "Could not complete login.\n"
-                    + exception.getMessage(),
+                    + error.getClass()
+                        .getSimpleName()
+                    + ": "
+                    + error.getMessage(),
                 "Login Error",
                 JOptionPane.ERROR_MESSAGE
             );
 
-            exception.printStackTrace();
+            error.printStackTrace();
 
         } finally {
             loginButton.setEnabled(true);
@@ -749,16 +767,16 @@ public class LoginFrame extends JFrame {
             registrationFrame.setVisible(true);
             setVisible(false);
 
-        } catch (Exception exception) {
+        } catch (Throwable error) {
             JOptionPane.showMessageDialog(
                 this,
                 "Could not open registration.\n"
-                    + exception.getMessage(),
+                    + error.getMessage(),
                 "Registration Error",
                 JOptionPane.ERROR_MESSAGE
             );
 
-            exception.printStackTrace();
+            error.printStackTrace();
         }
     }
 
@@ -770,16 +788,16 @@ public class LoginFrame extends JFrame {
             forgotFrame.setVisible(true);
             setVisible(false);
 
-        } catch (Exception exception) {
+        } catch (Throwable error) {
             JOptionPane.showMessageDialog(
                 this,
                 "Could not open forgot password.\n"
-                    + exception.getMessage(),
+                    + error.getMessage(),
                 "Forgot Password Error",
                 JOptionPane.ERROR_MESSAGE
             );
 
-            exception.printStackTrace();
+            error.printStackTrace();
         }
     }
 
@@ -795,37 +813,37 @@ public class LoginFrame extends JFrame {
                         "ADMIN"
                     )
             ) {
-                AdminDashboard dashboard =
+                AdminDashboard adminDashboard =
                     new AdminDashboard(
                         userId,
                         fullName
                     );
 
-                dashboard.setVisible(true);
+                adminDashboard.setVisible(true);
 
             } else {
-                CustomerDashboard dashboard =
+                CustomerDashboard customerDashboard =
                     new CustomerDashboard(
                         userId,
                         fullName
                     );
 
-                dashboard.setVisible(true);
+                customerDashboard.setVisible(true);
             }
 
             dispose();
 
-        } catch (Exception exception) {
+        } catch (Throwable error) {
             JOptionPane.showMessageDialog(
                 this,
                 "Login successful, but dashboard "
                     + "could not be opened.\n"
-                    + exception.getMessage(),
+                    + error.getMessage(),
                 "Dashboard Error",
                 JOptionPane.ERROR_MESSAGE
             );
 
-            exception.printStackTrace();
+            error.printStackTrace();
         }
     }
 
@@ -868,29 +886,164 @@ public class LoginFrame extends JFrame {
         ) {
             super.paintComponent(graphics);
 
-            Graphics2D graphics2D =
+            Graphics2D g =
                 (Graphics2D)
                     graphics.create();
 
-            graphics2D.setPaint(
+            g.setRenderingHint(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints
+                    .VALUE_ANTIALIAS_ON
+            );
+
+            GradientPaint gradient =
                 new GradientPaint(
                     0,
                     0,
-                    DARK_BLUE,
+                    new Color(5, 54, 112),
                     getWidth(),
                     getHeight(),
-                    LIGHT_BLUE
-                )
-            );
+                    new Color(0, 183, 215)
+                );
 
-            graphics2D.fillRect(
+            g.setPaint(gradient);
+
+            g.fillRect(
                 0,
                 0,
                 getWidth(),
                 getHeight()
             );
 
-            graphics2D.dispose();
+            /*
+             * Soft decorative circles
+             */
+            g.setColor(
+                new Color(
+                    255,
+                    255,
+                    255,
+                    22
+                )
+            );
+
+            g.fillOval(
+                -110,
+                -100,
+                340,
+                340
+            );
+
+            g.fillOval(
+                getWidth() - 230,
+                50,
+                310,
+                310
+            );
+
+            g.fillOval(
+                getWidth() - 330,
+                getHeight() - 245,
+                390,
+                390
+            );
+
+            g.setColor(
+                new Color(
+                    255,
+                    255,
+                    255,
+                    13
+                )
+            );
+
+            g.fillOval(
+                30,
+                getHeight() - 220,
+                285,
+                285
+            );
+
+            /*
+             * Railway track design
+             */
+            g.setColor(
+                new Color(
+                    255,
+                    255,
+                    255,
+                    30
+                )
+            );
+
+            g.setStroke(
+                new BasicStroke(4)
+            );
+
+            int trackY =
+                getHeight() - 52;
+
+            g.drawLine(
+                0,
+                trackY,
+                getWidth(),
+                trackY
+            );
+
+            g.drawLine(
+                0,
+                trackY + 18,
+                getWidth(),
+                trackY + 18
+            );
+
+            g.setStroke(
+                new BasicStroke(3)
+            );
+
+            for (
+                int x = -25;
+                x < getWidth() + 30;
+                x += 48
+            ) {
+                g.drawLine(
+                    x,
+                    trackY - 5,
+                    x + 22,
+                    trackY + 23
+                );
+            }
+
+            /*
+             * Small decorative dots
+             */
+            g.setColor(
+                new Color(
+                    255,
+                    255,
+                    255,
+                    40
+                )
+            );
+
+            g.fillOval(65, 115, 9, 9);
+            g.fillOval(112, 182, 6, 6);
+
+            g.fillOval(
+                getWidth() - 100,
+                145,
+                8,
+                8
+            );
+
+            g.fillOval(
+                getWidth() - 150,
+                225,
+                6,
+                6
+            );
+
+            g.dispose();
         }
     }
 
@@ -905,21 +1058,29 @@ public class LoginFrame extends JFrame {
         protected void paintComponent(
             Graphics graphics
         ) {
-            Graphics2D graphics2D =
+            Graphics2D g =
                 (Graphics2D)
                     graphics.create();
 
-            graphics2D.setRenderingHint(
+            g.setRenderingHint(
                 RenderingHints.KEY_ANTIALIASING,
                 RenderingHints
                     .VALUE_ANTIALIAS_ON
             );
 
-            graphics2D.setColor(
-                new Color(0, 50, 85, 90)
+            /*
+             * Card shadow
+             */
+            g.setColor(
+                new Color(
+                    0,
+                    45,
+                    80,
+                    85
+                )
             );
 
-            graphics2D.fillRoundRect(
+            g.fillRoundRect(
                 9,
                 10,
                 getWidth() - 10,
@@ -928,9 +1089,12 @@ public class LoginFrame extends JFrame {
                 28
             );
 
-            graphics2D.setColor(Color.WHITE);
+            /*
+             * White card
+             */
+            g.setColor(Color.WHITE);
 
-            graphics2D.fillRoundRect(
+            g.fillRoundRect(
                 0,
                 0,
                 getWidth() - 10,
@@ -939,7 +1103,7 @@ public class LoginFrame extends JFrame {
                 28
             );
 
-            graphics2D.dispose();
+            g.dispose();
 
             super.paintComponent(graphics);
         }
@@ -958,11 +1122,11 @@ public class LoginFrame extends JFrame {
         ) {
             super.paintComponent(graphics);
 
-            Graphics2D graphics2D =
+            Graphics2D g =
                 (Graphics2D)
                     graphics.create();
 
-            graphics2D.setRenderingHint(
+            g.setRenderingHint(
                 RenderingHints.KEY_ANTIALIASING,
                 RenderingHints
                     .VALUE_ANTIALIAS_ON
@@ -971,81 +1135,85 @@ public class LoginFrame extends JFrame {
             int center =
                 getWidth() / 2;
 
-            graphics2D.setColor(PRIMARY_BLUE);
+            g.setColor(PRIMARY_BLUE);
 
-            graphics2D.fillRoundRect(
-                center - 28,
-                4,
-                56,
-                58,
+            g.fillRoundRect(
+                center - 26,
+                2,
+                52,
+                54,
                 9,
                 9
             );
 
-            graphics2D.setColor(
-                new Color(120, 210, 245)
+            g.setColor(
+                new Color(
+                    120,
+                    210,
+                    245
+                )
             );
 
-            graphics2D.fillRoundRect(
-                center - 19,
-                13,
-                38,
-                23,
+            g.fillRoundRect(
+                center - 18,
+                11,
+                36,
+                21,
                 4,
                 4
             );
 
-            graphics2D.setColor(Color.WHITE);
+            g.setColor(Color.WHITE);
 
-            graphics2D.fillOval(
-                center - 19,
-                45,
-                11,
-                11
+            g.fillOval(
+                center - 18,
+                40,
+                10,
+                10
             );
 
-            graphics2D.fillOval(
+            g.fillOval(
                 center + 8,
-                45,
-                11,
-                11
+                40,
+                10,
+                10
             );
 
-            graphics2D.setColor(DARK_BLUE);
+            g.setColor(DARK_BLUE);
 
-            graphics2D.setStroke(
+            g.setStroke(
                 new BasicStroke(5)
             );
 
-            graphics2D.drawLine(
-                center - 16,
-                62,
-                center - 28,
-                80
+            g.drawLine(
+                center - 15,
+                56,
+                center - 27,
+                74
             );
 
-            graphics2D.drawLine(
-                center + 16,
-                62,
-                center + 28,
-                80
+            g.drawLine(
+                center + 15,
+                56,
+                center + 27,
+                74
             );
 
-            graphics2D.drawLine(
-                center - 25,
-                73,
-                center + 25,
-                73
+            g.drawLine(
+                center - 24,
+                67,
+                center + 24,
+                67
             );
 
-            graphics2D.drawLine(
-                center - 31,
-                83,
-                center + 31,
-                83
+            g.drawLine(
+                center - 30,
+                77,
+                center + 30,
+                77
             );
 
-            graphics2D.dispose();
+            g.dispose();
         }
     }
 
@@ -1061,7 +1229,8 @@ public class LoginFrame extends JFrame {
             } catch (Exception ignored) {
             }
 
-            new LoginFrame().setVisible(true);
+            new LoginFrame()
+                .setVisible(true);
         });
     }
 }
