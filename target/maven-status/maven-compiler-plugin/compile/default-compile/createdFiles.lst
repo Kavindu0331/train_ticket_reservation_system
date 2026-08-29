@@ -1,12 +1,4 @@
 com\trainreservation\FareEnquiryFrame.class
-com\trainreservation\TrainInformationDashboard.class
-com\trainreservation\Main.class
-com\trainreservation\ScheduleSearchFrame$2.class
-com\trainreservation\FareEnquiryFrame$2.class
-com\trainreservation\ScheduleSearchFrame.class
-com\trainreservation\DatabaseConnection.class
-com\trainreservation\TrainSchedulesFrame$1.class
 com\trainreservation\FareEnquiryFrame$1.class
-com\trainreservation\TrainSchedulesFrame$2.class
-com\trainreservation\ScheduleSearchFrame$1.class
-com\trainreservation\TrainSchedulesFrame.class
+com\trainreservation\FareEnquiryFrame$2.class
+com\trainreservation\DatabaseConnection.class
