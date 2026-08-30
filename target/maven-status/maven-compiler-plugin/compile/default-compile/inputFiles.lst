@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\AccountDashboardFrame.java
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\AddScheduleFrame.java
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\AddTrainFrame.java
@@ -7,29 +8,44 @@ C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\co
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\BookingHistoryFrame.java
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\CancelScheduleFrame.java
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\ChangePasswordFrame.java
+=======
+>>>>>>> 4a1f780a442310a4d6aa1f0451c1eb698c422c75
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\dao\AdminDao.java
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\dao\BookingDao.java
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\dao\ScheduleDao.java
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\dao\TrainDao.java
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\DatabaseConnection.java
+<<<<<<< HEAD
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\ForgotPasswordFrame.java
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\LoginFrame.java
+=======
+C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\FareEnquiryFrame.java
+>>>>>>> 4a1f780a442310a4d6aa1f0451c1eb698c422c75
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\Main.java
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\model\Admin.java
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\model\Booking.java
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\model\Schedule.java
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\model\Train.java
+<<<<<<< HEAD
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\MyProfileFrame.java
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\RegistrationFrame.java
+=======
+C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\ScheduleSearchFrame.java
+>>>>>>> 4a1f780a442310a4d6aa1f0451c1eb698c422c75
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\service\BookingHistoryService.java
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\service\ScheduleService.java
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\service\TrainService.java
-C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\StationDetailsFrame.java
+C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\TrainInformationDashboard.java
+C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\TrainSchedulesFrame.java
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\ui\AdminDashboard.java
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\ui\AdminProfilePanel.java
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\ui\BookingHistoryPanel.java
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\ui\ScheduleManagementPanel.java
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\ui\TrainManagementPanel.java
+<<<<<<< HEAD
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\UpdateTrainFrame.java
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\UserSession.java
 C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\ViewTrainsFrame.java
+=======
+C:\Users\~Kavindu~\Desktop\Java\train_ticket_reservation_system\src\main\java\com\trainreservation\util\DatabaseConnection.java
+>>>>>>> 4a1f780a442310a4d6aa1f0451c1eb698c422c75

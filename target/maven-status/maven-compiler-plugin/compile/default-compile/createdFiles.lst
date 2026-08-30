@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 com\trainreservation\AddScheduleFrame.class
 com\trainreservation\MyProfileFrame.class
 com\trainreservation\CancelScheduleFrame.class
@@ -47,3 +48,17 @@ com\trainreservation\RegistrationFrame.class
 com\trainreservation\AddScheduleFrame$TrainItem.class
 com\trainreservation\AdminLoginFrame$GradientPanel.class
 com\trainreservation\ForgotPasswordFrame$1.class
+=======
+com\trainreservation\FareEnquiryFrame.class
+com\trainreservation\TrainInformationDashboard.class
+com\trainreservation\Main.class
+com\trainreservation\ScheduleSearchFrame$2.class
+com\trainreservation\FareEnquiryFrame$2.class
+com\trainreservation\ScheduleSearchFrame.class
+com\trainreservation\DatabaseConnection.class
+com\trainreservation\TrainSchedulesFrame$1.class
+com\trainreservation\FareEnquiryFrame$1.class
+com\trainreservation\TrainSchedulesFrame$2.class
+com\trainreservation\ScheduleSearchFrame$1.class
+com\trainreservation\TrainSchedulesFrame.class
+>>>>>>> 4a1f780a442310a4d6aa1f0451c1eb698c422c75
