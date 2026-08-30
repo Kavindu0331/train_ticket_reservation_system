@@ -67,8 +67,4 @@ train_ticket_reservation_system/
 This is a group project split into member-owned modules.
 
 
-##Happy Coding...
-
-## License
-
-No license specified yet — add one (e.g. MIT) if you intend for others to reuse this code.
+## Happy Coding...
