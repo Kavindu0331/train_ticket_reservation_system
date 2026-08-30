@@ -20,6 +20,13 @@ public final class DatabaseConnection {
                         "database.properties"
                     )
         ) {
+    private static final Properties properties = new Properties();
+
+    static {
+        try (InputStream input = DatabaseConnection.class
+                .getClassLoader()
+                .getResourceAsStream("database.properties")) {
+
             if (input == null) {
                 throw new RuntimeException(
                     "database.properties was not found."
@@ -67,6 +74,11 @@ public final class DatabaseConnection {
             url,
             username,
             password
+    public static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(
+            properties.getProperty("db.url"),
+            properties.getProperty("db.username"),
+            properties.getProperty("db.password")
         );
     }
 }
