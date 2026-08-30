@@ -1,5 +1,6 @@
 package com.trainreservation;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -33,19 +34,90 @@ public final class DatabaseConnection {
                 "Could not load database settings.",
                 exception
             );
-        }
-    }
 
-    private DatabaseConnection() {
+            exception.printStackTrace();
+        }
     }
 
     public static Connection getConnection()
         throws SQLException {
 
+        String url =
+            getSetting(
+                "TRAIN_DB_URL",
+                "db.url",
+                DEFAULT_URL
+            );
+
+        String username =
+            getSetting(
+                "TRAIN_DB_USERNAME",
+                "db.username",
+                DEFAULT_USERNAME
+            );
+
+        String password =
+            getSetting(
+                "TRAIN_DB_PASSWORD",
+                "db.password",
+                DEFAULT_PASSWORD
+            );
+
+    public static Connection getConnection()
+        throws SQLException {
+
         return DriverManager.getConnection(
-            properties.getProperty("db.url"),
-            properties.getProperty("db.username"),
-            properties.getProperty("db.password")
+            url,
+            username,
+            password
         );
+    }
+
+    private static String getSetting(
+        String environmentName,
+        String propertyName,
+        String defaultValue
+    ) {
+        String environmentValue =
+            System.getenv(environmentName);
+
+        if (
+            environmentValue != null
+                && !environmentValue.isBlank()
+        ) {
+            return environmentValue.trim();
+        }
+
+        String propertyValue =
+            PROPERTIES.getProperty(
+                propertyName
+            );
+
+        if (
+            propertyValue != null
+                && !propertyValue.isBlank()
+        ) {
+            return propertyValue.trim();
+        }
+
+        return defaultValue;
+    }
+
+    public static boolean testConnection() {
+        try (
+            Connection connection =
+                getConnection()
+        ) {
+            return connection != null
+                && !connection.isClosed();
+
+        } catch (SQLException exception) {
+            System.out.println(
+                "Database connection failed: "
+                    + exception.getMessage()
+            );
+
+            return false;
+        }
     }
 }
