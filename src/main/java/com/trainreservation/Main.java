@@ -13,20 +13,13 @@ public class Main {
         } catch (Exception ignored) {
         }
 
-        SwingUtilities.invokeLater(() -> {
-            new TrainInformationDashboard(
-                1L
-            ).setVisible(true);
-        });
-    }
-}
-import javax.swing.*;
+        SwingUtilities.invokeLater(
+            () -> {
+                LoginFrame loginFrame =
+                    new LoginFrame();
 
-public class Main {
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new AdminLoginFrame().setVisible(true);
-        });
+                loginFrame.setVisible(true);
+            }
+        );
     }
 }

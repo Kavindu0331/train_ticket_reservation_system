@@ -20,13 +20,6 @@ public final class DatabaseConnection {
                         "database.properties"
                     )
         ) {
-    private static final Properties properties = new Properties();
-
-    static {
-        try (InputStream input = DatabaseConnection.class
-                .getClassLoader()
-                .getResourceAsStream("database.properties")) {
-
             if (input == null) {
                 throw new RuntimeException(
                     "database.properties was not found."
@@ -49,32 +42,6 @@ public final class DatabaseConnection {
     public static Connection getConnection()
         throws SQLException {
 
-        String url =
-            properties.getProperty("db.url");
-
-        String username =
-            properties.getProperty("db.username");
-
-        String password =
-            properties.getProperty(
-                "db.password",
-                ""
-            );
-
-        if (
-            url == null
-                || url.isBlank()
-        ) {
-            throw new SQLException(
-                "Database URL is missing."
-            );
-        }
-
-        return DriverManager.getConnection(
-            url,
-            username,
-            password
-    public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(
             properties.getProperty("db.url"),
             properties.getProperty("db.username"),
