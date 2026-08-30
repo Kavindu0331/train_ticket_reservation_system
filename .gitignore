@@ -1,4 +1,1 @@
-target/
-.vscode/
-*.class
-src/main/resources/database.properties
+/target/

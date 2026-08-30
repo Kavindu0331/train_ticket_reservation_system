@@ -2,8 +2,6 @@ package com.trainreservation;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.plaf.basic.BasicButtonUI;
-
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,234 +9,221 @@ import java.sql.ResultSet;
 
 public class LoginFrame extends JFrame {
 
-    private static final Color DARK_BLUE =
-        new Color(7, 61, 121);
+    private final JTextField emailField =
+        new JTextField();
 
-    private static final Color LIGHT_BLUE =
-        new Color(0, 180, 215);
+    private final JPasswordField passwordField =
+        new JPasswordField();
 
-    private static final Color PRIMARY_BLUE =
-        new Color(28, 101, 215);
+    private final JCheckBox showPasswordBox =
+        new JCheckBox("Show Password");
 
-    private static final Color TEXT_COLOR =
-        new Color(25, 30, 40);
-
-    private JTextField emailField;
-    private JPasswordField passwordField;
-    private JCheckBox showPasswordBox;
-    private JButton loginButton;
+    private final JButton loginButton =
+        createButton(
+            "LOGIN",
+            new Color(35, 110, 200)
+        );
 
     public LoginFrame() {
-        initializeWindow();
-        initializeInterface();
-    }
-
-    private void initializeWindow() {
         setTitle("Train Reservation System");
-        setSize(920, 740);
+        setSize(930, 760);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(
-            JFrame.EXIT_ON_CLOSE
-        );
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
+
+        createInterface();
     }
 
-    private void initializeInterface() {
-        GradientPanel backgroundPanel =
+    private void createInterface() {
+        GradientPanel background =
             new GradientPanel();
 
-        backgroundPanel.setLayout(
+        background.setLayout(
             new GridBagLayout()
         );
 
-        LoginCard loginCard =
-            new LoginCard();
-
-        loginCard.setPreferredSize(
-            new Dimension(550, 620)
+        background.setBorder(
+            new EmptyBorder(30, 30, 30, 30)
         );
 
-        loginCard.setLayout(
-            new BorderLayout()
+        RoundedPanel card =
+            new RoundedPanel();
+
+        card.setLayout(
+            new BorderLayout(10, 15)
         );
 
-        loginCard.setBorder(
-            new EmptyBorder(
-                28,
-                50,
-                27,
-                50
-            )
+        card.setPreferredSize(
+            new Dimension(600, 630)
         );
 
-        loginCard.add(
-            createHeaderPanel(),
+        card.setBorder(
+            new EmptyBorder(35, 65, 35, 65)
+        );
+
+        card.add(
+            createHeadingPanel(),
             BorderLayout.NORTH
         );
 
-        loginCard.add(
-            createFormPanel(),
+        card.add(
+            createLoginForm(),
             BorderLayout.CENTER
         );
 
-        backgroundPanel.add(loginCard);
-
-        setContentPane(backgroundPanel);
-
-        SwingUtilities.invokeLater(
-            () -> emailField
-                .requestFocusInWindow()
-        );
+        background.add(card);
+        setContentPane(background);
     }
 
-    private JPanel createHeaderPanel() {
-        JPanel headerPanel =
+    private JPanel createHeadingPanel() {
+        JPanel headingPanel =
             new JPanel();
 
-        headerPanel.setOpaque(false);
+        headingPanel.setOpaque(false);
 
-        headerPanel.setLayout(
+        headingPanel.setLayout(
             new BoxLayout(
-                headerPanel,
+                headingPanel,
                 BoxLayout.Y_AXIS
             )
         );
 
-        TrainIconPanel trainIcon =
-            new TrainIconPanel();
-
-        trainIcon.setPreferredSize(
-            new Dimension(82, 82)
-        );
-
-        trainIcon.setMinimumSize(
-            new Dimension(82, 82)
-        );
-
-        trainIcon.setMaximumSize(
-            new Dimension(82, 82)
-        );
+        TrainIcon trainIcon =
+            new TrainIcon();
 
         trainIcon.setAlignmentX(
             Component.CENTER_ALIGNMENT
         );
 
-        JLabel titleLabel =
+        trainIcon.setPreferredSize(
+            new Dimension(85, 85)
+        );
+
+        trainIcon.setMaximumSize(
+            new Dimension(85, 85)
+        );
+
+        JLabel title =
             new JLabel(
                 "Train Reservation System"
             );
 
-        titleLabel.setFont(
-            new Font(
-                "Arial",
-                Font.BOLD,
-                28
-            )
+        title.setFont(
+            new Font("Arial", Font.BOLD, 30)
         );
 
-        titleLabel.setForeground(DARK_BLUE);
+        title.setForeground(
+            new Color(15, 75, 140)
+        );
 
-        titleLabel.setAlignmentX(
+        title.setAlignmentX(
             Component.CENTER_ALIGNMENT
         );
 
-        JLabel subtitleLabel =
-            new JLabel(
-                "Sign in to continue"
-            );
+        JLabel subtitle =
+            new JLabel("Sign in to continue");
 
-        subtitleLabel.setFont(
-            new Font(
-                "Arial",
-                Font.PLAIN,
-                15
-            )
+        subtitle.setFont(
+            new Font("Arial", Font.PLAIN, 15)
         );
 
-        subtitleLabel.setForeground(
-            new Color(75, 80, 90)
+        subtitle.setForeground(
+            new Color(75, 85, 100)
         );
 
-        subtitleLabel.setAlignmentX(
+        subtitle.setAlignmentX(
             Component.CENTER_ALIGNMENT
         );
 
-        headerPanel.add(trainIcon);
-
-        headerPanel.add(
-            Box.createVerticalStrut(7)
+        headingPanel.add(trainIcon);
+        headingPanel.add(
+            Box.createVerticalStrut(8)
         );
-
-        headerPanel.add(titleLabel);
-
-        headerPanel.add(
-            Box.createVerticalStrut(6)
+        headingPanel.add(title);
+        headingPanel.add(
+            Box.createVerticalStrut(8)
         );
+        headingPanel.add(subtitle);
 
-        headerPanel.add(subtitleLabel);
-
-        return headerPanel;
+        return headingPanel;
     }
 
-    private JPanel createFormPanel() {
+    private JPanel createLoginForm() {
         JPanel formPanel =
-            new JPanel(
-                new GridBagLayout()
-            );
+            new JPanel(new GridBagLayout());
 
         formPanel.setOpaque(false);
-
-        formPanel.setBorder(
-            new EmptyBorder(
-                20,
-                0,
-                0,
-                0
-            )
-        );
 
         GridBagConstraints constraints =
             new GridBagConstraints();
 
         constraints.gridx = 0;
-        constraints.weightx = 1.0;
-
+        constraints.weightx = 1;
         constraints.fill =
             GridBagConstraints.HORIZONTAL;
 
         JLabel emailLabel =
             createLabel("Email");
 
-        emailField =
-            createTextField();
+        constraints.gridy = 0;
+        constraints.insets =
+            new Insets(15, 0, 6, 0);
 
-        emailField.setToolTipText(
-            "Enter your registered email"
+        formPanel.add(
+            emailLabel,
+            constraints
+        );
+
+        prepareField(emailField);
+
+        constraints.gridy = 1;
+        constraints.insets =
+            new Insets(0, 0, 13, 0);
+
+        formPanel.add(
+            emailField,
+            constraints
         );
 
         JLabel passwordLabel =
             createLabel("Password");
 
-        passwordField =
-            new JPasswordField();
+        constraints.gridy = 2;
+        constraints.insets =
+            new Insets(0, 0, 6, 0);
 
-        configureTextField(passwordField);
-
-        passwordField.setEchoChar('\u2022');
-
-        passwordField.setToolTipText(
-            "Enter your password"
+        formPanel.add(
+            passwordLabel,
+            constraints
         );
 
-        showPasswordBox =
-            new JCheckBox("Show Password");
+        prepareField(passwordField);
 
-        configureCheckBox(
-            showPasswordBox
+        constraints.gridy = 3;
+        constraints.insets =
+            new Insets(0, 0, 8, 0);
+
+        formPanel.add(
+            passwordField,
+            constraints
         );
 
-        loginButton =
-            createPrimaryButton("LOGIN");
+        showPasswordBox.setOpaque(false);
+
+        showPasswordBox.setFont(
+            new Font("Arial", Font.PLAIN, 13)
+        );
+
+        showPasswordBox.setFocusPainted(false);
+
+        constraints.gridy = 4;
+        constraints.insets =
+            new Insets(0, 0, 20, 0);
+
+        formPanel.add(
+            showPasswordBox,
+            constraints
+        );
 
         JButton createAccountButton =
             createOutlineButton(
@@ -251,90 +236,39 @@ public class LoginFrame extends JFrame {
             );
 
         JButton exitButton =
-            createExitButton("EXIT");
+            createButton(
+                "EXIT",
+                new Color(95, 110, 125)
+            );
 
-        addFormComponent(
-            formPanel,
-            emailLabel,
-            constraints,
-            0,
-            0,
-            6
-        );
+        constraints.gridy = 5;
+        constraints.insets =
+            new Insets(0, 65, 10, 65);
 
-        addFormComponent(
-            formPanel,
-            emailField,
-            constraints,
-            1,
-            0,
-            14
-        );
-
-        addFormComponent(
-            formPanel,
-            passwordLabel,
-            constraints,
-            2,
-            0,
-            6
-        );
-
-        addFormComponent(
-            formPanel,
-            passwordField,
-            constraints,
-            3,
-            0,
-            8
-        );
-
-        addFormComponent(
-            formPanel,
-            showPasswordBox,
-            constraints,
-            4,
-            0,
-            17
-        );
-
-        addFormComponent(
-            formPanel,
+        formPanel.add(
             loginButton,
-            constraints,
-            5,
-            9,
-            10
+            constraints
         );
 
-        addFormComponent(
-            formPanel,
+        constraints.gridy = 6;
+
+        formPanel.add(
             createAccountButton,
-            constraints,
-            6,
-            8,
-            6
+            constraints
         );
 
-        addFormComponent(
-            formPanel,
+        constraints.gridy = 7;
+        constraints.insets =
+            new Insets(0, 65, 8, 65);
+
+        formPanel.add(
             forgotPasswordButton,
-            constraints,
-            7,
-            2,
-            7
+            constraints
         );
 
         constraints.gridy = 8;
-        constraints.ipady = 7;
-
         constraints.insets =
-            new Insets(
-                0,
-                125,
-                0,
-                125
-            );
+            new Insets(0, 65, 0, 65);
 
         formPanel.add(
             exitButton,
@@ -342,14 +276,10 @@ public class LoginFrame extends JFrame {
         );
 
         showPasswordBox.addActionListener(
-            event -> togglePassword()
+            event -> showOrHidePassword()
         );
 
         loginButton.addActionListener(
-            event -> login()
-        );
-
-        passwordField.addActionListener(
             event -> login()
         );
 
@@ -365,159 +295,70 @@ public class LoginFrame extends JFrame {
             event -> exitApplication()
         );
 
+        getRootPane().setDefaultButton(
+            loginButton
+        );
+
         return formPanel;
     }
 
-    private void addFormComponent(
-        JPanel panel,
-        Component component,
-        GridBagConstraints constraints,
-        int row,
-        int verticalPadding,
-        int bottomMargin
-    ) {
-        constraints.gridy = row;
-
-        if (component instanceof JTextField) {
-            constraints.ipady = 0;
-        } else {
-            constraints.ipady =
-                verticalPadding;
-        }
-
-        constraints.insets =
-            new Insets(
-                0,
-                0,
-                bottomMargin,
-                0
-            );
-
-        panel.add(component, constraints);
-    }
-
-    private JLabel createLabel(
-        String text
-    ) {
-        JLabel label =
-            new JLabel(text);
+    private JLabel createLabel(String text) {
+        JLabel label = new JLabel(text);
 
         label.setFont(
-            new Font(
-                "Arial",
-                Font.BOLD,
-                15
-            )
+            new Font("Arial", Font.BOLD, 14)
         );
 
-        label.setForeground(TEXT_COLOR);
+        label.setForeground(
+            new Color(25, 35, 50)
+        );
 
         return label;
     }
 
-    private JTextField createTextField() {
-        JTextField textField =
-            new JTextField();
-
-        configureTextField(textField);
-
-        return textField;
-    }
-
-    private void configureTextField(
-        JTextField textField
+    private void prepareField(
+        JComponent field
     ) {
-        textField.setFont(
-            new Font(
-                "Arial",
-                Font.PLAIN,
-                15
-            )
+        field.setFont(
+            new Font("Arial", Font.PLAIN, 14)
         );
 
-        textField.setPreferredSize(
+        field.setPreferredSize(
             new Dimension(440, 42)
         );
 
-        textField.setMinimumSize(
+        field.setMinimumSize(
             new Dimension(440, 42)
-        );
-
-        textField.setBackground(
-            new Color(250, 252, 255)
-        );
-
-        textField.setForeground(TEXT_COLOR);
-        textField.setCaretColor(DARK_BLUE);
-
-        textField.setBorder(
-            BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(
-                    new Color(
-                        175,
-                        193,
-                        215
-                    ),
-                    1
-                ),
-                new EmptyBorder(
-                    6,
-                    11,
-                    6,
-                    11
-                )
-            )
-        );
-    }
-
-    private void configureCheckBox(
-        JCheckBox checkBox
-    ) {
-        checkBox.setFont(
-            new Font(
-                "Arial",
-                Font.PLAIN,
-                14
-            )
-        );
-
-        checkBox.setForeground(TEXT_COLOR);
-        checkBox.setBackground(Color.WHITE);
-
-        checkBox.setFocusPainted(false);
-
-        checkBox.setCursor(
-            Cursor.getPredefinedCursor(
-                Cursor.HAND_CURSOR
-            )
         );
     }
 
     private JButton createButton(
-        String text
+        String text,
+        Color backgroundColor
     ) {
         JButton button =
             new JButton(text);
 
-        button.setUI(
-            new BasicButtonUI()
+        button.setPreferredSize(
+            new Dimension(300, 44)
         );
+
+        button.setMinimumSize(
+            new Dimension(300, 44)
+        );
+
+        button.setBackground(
+            backgroundColor
+        );
+
+        button.setForeground(Color.WHITE);
 
         button.setFont(
-            new Font(
-                "Arial",
-                Font.BOLD,
-                15
-            )
-        );
-
-        button.setPreferredSize(
-            new Dimension(440, 43)
+            new Font("Arial", Font.BOLD, 13)
         );
 
         button.setFocusPainted(false);
         button.setBorderPainted(false);
-        button.setOpaque(true);
 
         button.setCursor(
             Cursor.getPredefinedCursor(
@@ -528,51 +369,43 @@ public class LoginFrame extends JFrame {
         return button;
     }
 
-    private JButton createPrimaryButton(
-        String text
-    ) {
-        JButton button =
-            createButton(text);
-
-        button.setBackground(PRIMARY_BLUE);
-        button.setForeground(Color.WHITE);
-
-        return button;
-    }
-
     private JButton createOutlineButton(
         String text
     ) {
         JButton button =
-            createButton(text);
+            new JButton(text);
+
+        button.setPreferredSize(
+            new Dimension(300, 44)
+        );
+
+        button.setMinimumSize(
+            new Dimension(300, 44)
+        );
 
         button.setBackground(Color.WHITE);
-        button.setForeground(PRIMARY_BLUE);
 
-        button.setBorderPainted(true);
+        button.setForeground(
+            new Color(35, 110, 200)
+        );
+
+        button.setFont(
+            new Font("Arial", Font.BOLD, 13)
+        );
+
+        button.setFocusPainted(false);
 
         button.setBorder(
             BorderFactory.createLineBorder(
-                PRIMARY_BLUE,
+                new Color(35, 110, 200),
                 2
             )
         );
 
-        return button;
-    }
-
-    private JButton createExitButton(
-        String text
-    ) {
-        JButton button =
-            createButton(text);
-
-        button.setBackground(
-            new Color(235, 240, 247)
-        );
-
-        button.setForeground(
-            new Color(45, 50, 60)
+        button.setCursor(
+            Cursor.getPredefinedCursor(
+                Cursor.HAND_CURSOR
+            )
         );
 
         return button;
@@ -584,23 +417,17 @@ public class LoginFrame extends JFrame {
         JButton button =
             new JButton(text);
 
-        button.setUI(
-            new BasicButtonUI()
-        );
-
         button.setFont(
-            new Font(
-                "Arial",
-                Font.PLAIN,
-                15
-            )
+            new Font("Arial", Font.PLAIN, 14)
         );
 
-        button.setForeground(PRIMARY_BLUE);
-        button.setBackground(Color.WHITE);
+        button.setForeground(
+            new Color(25, 95, 190)
+        );
 
-        button.setFocusPainted(false);
+        button.setContentAreaFilled(false);
         button.setBorderPainted(false);
+        button.setFocusPainted(false);
 
         button.setCursor(
             Cursor.getPredefinedCursor(
@@ -611,7 +438,7 @@ public class LoginFrame extends JFrame {
         return button;
     }
 
-    private void togglePassword() {
+    private void showOrHidePassword() {
         if (showPasswordBox.isSelected()) {
             passwordField.setEchoChar(
                 (char) 0
@@ -632,37 +459,16 @@ public class LoginFrame extends JFrame {
                 passwordField.getPassword()
             );
 
-        if (email.isEmpty()) {
-            showWarning(
-                "Please enter your email address.",
-                "Email Required"
+        if (
+            email.isEmpty()
+                || password.isEmpty()
+        ) {
+            JOptionPane.showMessageDialog(
+                this,
+                "Enter your email and password.",
+                "Missing Information",
+                JOptionPane.WARNING_MESSAGE
             );
-
-            emailField.requestFocusInWindow();
-            return;
-        }
-
-        if (!email.matches(
-            "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
-        )) {
-            showWarning(
-                "Please enter a valid email address.",
-                "Invalid Email"
-            );
-
-            emailField.requestFocusInWindow();
-            return;
-        }
-
-        if (password.isEmpty()) {
-            showWarning(
-                "Please enter your password.",
-                "Password Required"
-            );
-
-            passwordField
-                .requestFocusInWindow();
-
             return;
         }
 
@@ -670,47 +476,38 @@ public class LoginFrame extends JFrame {
             SELECT
                 user_id,
                 full_name,
-                email,
                 role
             FROM users
             WHERE LOWER(email) = LOWER(?)
               AND password_hash = SHA2(?, 256)
-            LIMIT 1
             """;
 
         loginButton.setEnabled(false);
-        loginButton.setText("CHECKING...");
+        loginButton.setText(
+            "SIGNING IN..."
+        );
 
         try (
             Connection connection =
-                DatabaseConnection
-                    .getConnection();
+                DatabaseConnection.getConnection();
 
             PreparedStatement statement =
-                connection
-                    .prepareStatement(sql)
+                connection.prepareStatement(sql)
         ) {
             statement.setString(1, email);
-            statement.setString(
-                2,
-                password
-            );
+            statement.setString(2, password);
 
             try (
                 ResultSet result =
                     statement.executeQuery()
             ) {
                 if (!result.next()) {
-                    showWarning(
-                        "Incorrect email or password.",
-                        "Login Failed"
+                    JOptionPane.showMessageDialog(
+                        this,
+                        "Invalid email or password.",
+                        "Login Failed",
+                        JOptionPane.WARNING_MESSAGE
                     );
-
-                    passwordField.setText("");
-
-                    passwordField
-                        .requestFocusInWindow();
-
                     return;
                 }
 
@@ -725,33 +522,29 @@ public class LoginFrame extends JFrame {
                 String role =
                     result.getString("role");
 
-                JOptionPane.showMessageDialog(
-                    this,
-                    "Welcome, " + fullName + "!",
-                    "Login Successful",
-                    JOptionPane.INFORMATION_MESSAGE
-                );
-
-                openDashboard(
+                UserSession.start(
                     userId,
                     fullName,
                     role
                 );
+
+                AccountDashboardFrame dashboard =
+                    new AccountDashboardFrame();
+
+                dashboard.setVisible(true);
+                dispose();
             }
 
-        } catch (Throwable error) {
+        } catch (Exception exception) {
             JOptionPane.showMessageDialog(
                 this,
-                "Could not complete login.\n"
-                    + error.getClass()
-                        .getSimpleName()
-                    + ": "
-                    + error.getMessage(),
+                "Could not complete login:\n"
+                    + exception.getMessage(),
                 "Login Error",
                 JOptionPane.ERROR_MESSAGE
             );
 
-            error.printStackTrace();
+            exception.printStackTrace();
 
         } finally {
             loginButton.setEnabled(true);
@@ -761,16 +554,16 @@ public class LoginFrame extends JFrame {
 
     private void openRegistration() {
         try {
-            RegistrationFrame registrationFrame =
+            RegistrationFrame frame =
                 new RegistrationFrame(this);
 
-            registrationFrame.setVisible(true);
+            frame.setVisible(true);
             setVisible(false);
 
         } catch (Throwable error) {
             JOptionPane.showMessageDialog(
                 this,
-                "Could not open registration.\n"
+                "Could not open registration:\n"
                     + error.getMessage(),
                 "Registration Error",
                 JOptionPane.ERROR_MESSAGE
@@ -782,16 +575,16 @@ public class LoginFrame extends JFrame {
 
     private void openForgotPassword() {
         try {
-            ForgotPasswordFrame forgotFrame =
+            ForgotPasswordFrame frame =
                 new ForgotPasswordFrame(this);
 
-            forgotFrame.setVisible(true);
+            frame.setVisible(true);
             setVisible(false);
 
         } catch (Throwable error) {
             JOptionPane.showMessageDialog(
                 this,
-                "Could not open forgot password.\n"
+                "Could not open forgot password page:\n"
                     + error.getMessage(),
                 "Forgot Password Error",
                 JOptionPane.ERROR_MESSAGE
@@ -801,72 +594,13 @@ public class LoginFrame extends JFrame {
         }
     }
 
-    private void openDashboard(
-        long userId,
-        String fullName,
-        String role
-    ) {
-        try {
-            if (
-                role != null
-                    && role.equalsIgnoreCase(
-                        "ADMIN"
-                    )
-            ) {
-                AdminDashboard adminDashboard =
-                    new AdminDashboard(
-                        userId,
-                        fullName
-                    );
-
-                adminDashboard.setVisible(true);
-
-            } else {
-                CustomerDashboard customerDashboard =
-                    new CustomerDashboard(
-                        userId,
-                        fullName
-                    );
-
-                customerDashboard.setVisible(true);
-            }
-
-            dispose();
-
-        } catch (Throwable error) {
-            JOptionPane.showMessageDialog(
-                this,
-                "Login successful, but dashboard "
-                    + "could not be opened.\n"
-                    + error.getMessage(),
-                "Dashboard Error",
-                JOptionPane.ERROR_MESSAGE
-            );
-
-            error.printStackTrace();
-        }
-    }
-
-    private void showWarning(
-        String message,
-        String title
-    ) {
-        JOptionPane.showMessageDialog(
-            this,
-            message,
-            title,
-            JOptionPane.WARNING_MESSAGE
-        );
-    }
-
     private void exitApplication() {
         int answer =
             JOptionPane.showConfirmDialog(
                 this,
                 "Do you want to exit?",
                 "Confirm Exit",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE
+                JOptionPane.YES_NO_OPTION
             );
 
         if (
@@ -880,30 +614,22 @@ public class LoginFrame extends JFrame {
     private static class GradientPanel
         extends JPanel {
 
-        @Override
         protected void paintComponent(
             Graphics graphics
         ) {
             super.paintComponent(graphics);
 
             Graphics2D g =
-                (Graphics2D)
-                    graphics.create();
-
-            g.setRenderingHint(
-                RenderingHints.KEY_ANTIALIASING,
-                RenderingHints
-                    .VALUE_ANTIALIAS_ON
-            );
+                (Graphics2D) graphics.create();
 
             GradientPaint gradient =
                 new GradientPaint(
                     0,
                     0,
-                    new Color(5, 54, 112),
+                    new Color(10, 55, 115),
                     getWidth(),
                     getHeight(),
-                    new Color(0, 183, 215)
+                    new Color(0, 180, 220)
                 );
 
             g.setPaint(gradient);
@@ -915,322 +641,165 @@ public class LoginFrame extends JFrame {
                 getHeight()
             );
 
-            /*
-             * Soft decorative circles
-             */
-            g.setColor(
-                new Color(
-                    255,
-                    255,
-                    255,
-                    22
-                )
-            );
+            g.dispose();
+        }
+    }
 
-            g.fillOval(
-                -110,
-                -100,
-                340,
-                340
-            );
+    private static class RoundedPanel
+        extends JPanel {
 
-            g.fillOval(
-                getWidth() - 230,
-                50,
-                310,
-                310
-            );
+        public RoundedPanel() {
+            setOpaque(false);
+        }
 
-            g.fillOval(
-                getWidth() - 330,
-                getHeight() - 245,
-                390,
-                390
+        protected void paintComponent(
+            Graphics graphics
+        ) {
+            Graphics2D g =
+                (Graphics2D) graphics.create();
+
+            g.setRenderingHint(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON
             );
 
             g.setColor(
-                new Color(
-                    255,
-                    255,
-                    255,
-                    13
-                )
+                new Color(0, 0, 0, 38)
+            );
+
+            g.fillRoundRect(
+                10,
+                12,
+                getWidth() - 10,
+                getHeight() - 12,
+                28,
+                28
+            );
+
+            g.setColor(Color.WHITE);
+
+            g.fillRoundRect(
+                0,
+                0,
+                getWidth() - 10,
+                getHeight() - 12,
+                28,
+                28
+            );
+
+            g.dispose();
+
+            super.paintComponent(graphics);
+        }
+
+        protected void paintBorder(
+            Graphics graphics
+        ) {
+        }
+    }
+
+    private static class TrainIcon
+        extends JPanel {
+
+        public TrainIcon() {
+            setOpaque(false);
+        }
+
+        protected void paintComponent(
+            Graphics graphics
+        ) {
+            super.paintComponent(graphics);
+
+            Graphics2D g =
+                (Graphics2D) graphics.create();
+
+            g.setRenderingHint(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON
+            );
+
+            int center =
+                getWidth() / 2;
+
+            g.setColor(
+                new Color(35, 110, 200)
+            );
+
+            g.fillRoundRect(
+                center - 27,
+                8,
+                54,
+                52,
+                10,
+                10
+            );
+
+            g.setColor(
+                new Color(140, 220, 245)
+            );
+
+            g.fillRoundRect(
+                center - 19,
+                16,
+                38,
+                21,
+                5,
+                5
+            );
+
+            g.setColor(Color.WHITE);
+
+            g.fillOval(
+                center - 19,
+                44,
+                10,
+                10
             );
 
             g.fillOval(
-                30,
-                getHeight() - 220,
-                285,
-                285
+                center + 9,
+                44,
+                10,
+                10
             );
 
-            /*
-             * Railway track design
-             */
             g.setColor(
-                new Color(
-                    255,
-                    255,
-                    255,
-                    30
-                )
+                new Color(10, 45, 90)
             );
 
             g.setStroke(
                 new BasicStroke(4)
             );
 
-            int trackY =
-                getHeight() - 52;
-
             g.drawLine(
-                0,
-                trackY,
-                getWidth(),
-                trackY
+                center - 20,
+                60,
+                center - 31,
+                78
             );
 
             g.drawLine(
-                0,
-                trackY + 18,
-                getWidth(),
-                trackY + 18
+                center + 20,
+                60,
+                center + 31,
+                78
             );
 
-            g.setStroke(
-                new BasicStroke(3)
+            g.drawLine(
+                center - 31,
+                78,
+                center + 31,
+                78
             );
 
-            for (
-                int x = -25;
-                x < getWidth() + 30;
-                x += 48
-            ) {
-                g.drawLine(
-                    x,
-                    trackY - 5,
-                    x + 22,
-                    trackY + 23
-                );
-            }
-
-            /*
-             * Small decorative dots
-             */
-            g.setColor(
-                new Color(
-                    255,
-                    255,
-                    255,
-                    40
-                )
-            );
-
-            g.fillOval(65, 115, 9, 9);
-            g.fillOval(112, 182, 6, 6);
-
-            g.fillOval(
-                getWidth() - 100,
-                145,
-                8,
-                8
-            );
-
-            g.fillOval(
-                getWidth() - 150,
-                225,
-                6,
-                6
+            g.drawLine(
+                center - 25,
+                69,
+                center + 25,
+                69
             );
 
             g.dispose();
         }
-    }
-
-    private static class LoginCard
-        extends JPanel {
-
-        LoginCard() {
-            setOpaque(false);
-        }
-
-        @Override
-        protected void paintComponent(
-            Graphics graphics
-        ) {
-            Graphics2D g =
-                (Graphics2D)
-                    graphics.create();
-
-            g.setRenderingHint(
-                RenderingHints.KEY_ANTIALIASING,
-                RenderingHints
-                    .VALUE_ANTIALIAS_ON
-            );
-
-            /*
-             * Card shadow
-             */
-            g.setColor(
-                new Color(
-                    0,
-                    45,
-                    80,
-                    85
-                )
-            );
-
-            g.fillRoundRect(
-                9,
-                10,
-                getWidth() - 10,
-                getHeight() - 11,
-                28,
-                28
-            );
-
-            /*
-             * White card
-             */
-            g.setColor(Color.WHITE);
-
-            g.fillRoundRect(
-                0,
-                0,
-                getWidth() - 10,
-                getHeight() - 11,
-                28,
-                28
-            );
-
-            g.dispose();
-
-            super.paintComponent(graphics);
-        }
-    }
-
-    private static class TrainIconPanel
-        extends JPanel {
-
-        TrainIconPanel() {
-            setOpaque(false);
-        }
-
-        @Override
-        protected void paintComponent(
-            Graphics graphics
-        ) {
-            super.paintComponent(graphics);
-
-            Graphics2D g =
-                (Graphics2D)
-                    graphics.create();
-
-            g.setRenderingHint(
-                RenderingHints.KEY_ANTIALIASING,
-                RenderingHints
-                    .VALUE_ANTIALIAS_ON
-            );
-
-            int center =
-                getWidth() / 2;
-
-            g.setColor(PRIMARY_BLUE);
-
-            g.fillRoundRect(
-                center - 26,
-                2,
-                52,
-                54,
-                9,
-                9
-            );
-
-            g.setColor(
-                new Color(
-                    120,
-                    210,
-                    245
-                )
-            );
-
-            g.fillRoundRect(
-                center - 18,
-                11,
-                36,
-                21,
-                4,
-                4
-            );
-
-            g.setColor(Color.WHITE);
-
-            g.fillOval(
-                center - 18,
-                40,
-                10,
-                10
-            );
-
-            g.fillOval(
-                center + 8,
-                40,
-                10,
-                10
-            );
-
-            g.setColor(DARK_BLUE);
-
-            g.setStroke(
-                new BasicStroke(5)
-            );
-
-            g.drawLine(
-                center - 15,
-                56,
-                center - 27,
-                74
-            );
-
-            g.drawLine(
-                center + 15,
-                56,
-                center + 27,
-                74
-            );
-
-            g.drawLine(
-                center - 24,
-                67,
-                center + 24,
-                67
-            );
-
-            g.drawLine(
-                center - 30,
-                77,
-                center + 30,
-                77
-            );
-
-            g.dispose();
-        }
-    }
-
-    public static void main(
-        String[] arguments
-    ) {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                UIManager.setLookAndFeel(
-                    UIManager
-                        .getSystemLookAndFeelClassName()
-                );
-            } catch (Exception ignored) {
-            }
-
-            new LoginFrame()
-                .setVisible(true);
-        });
     }
 }

@@ -9,51 +9,30 @@ import java.util.Properties;
 
 public final class DatabaseConnection {
 
-    private static final String DEFAULT_URL =
-        "jdbc:mysql://localhost:3306/train_reservation_db"
-            + "?useSSL=false"
-            + "&allowPublicKeyRetrieval=true"
-            + "&serverTimezone=Asia/Colombo"
-            + "&connectTimeout=5000";
-
-    private static final String DEFAULT_USERNAME =
-        "root";
-
-    private static final String DEFAULT_PASSWORD =
-        "";
-
-    private static final Properties PROPERTIES =
+    private static final Properties properties =
         new Properties();
 
     static {
-        loadProperties();
-    }
-
-    private DatabaseConnection() {
-    }
-
-    private static void loadProperties() {
         try (
-            InputStream inputStream =
+            InputStream input =
                 DatabaseConnection.class
                     .getClassLoader()
                     .getResourceAsStream(
                         "database.properties"
                     )
         ) {
-            if (inputStream != null) {
-                PROPERTIES.load(inputStream);
-            } else {
-                System.out.println(
-                    "database.properties was not found. "
-                        + "Using local XAMPP defaults."
+            if (input == null) {
+                throw new RuntimeException(
+                    "database.properties was not found."
                 );
             }
 
-        } catch (IOException exception) {
-            System.out.println(
-                "Could not read database.properties. "
-                    + "Using local XAMPP defaults."
+            properties.load(input);
+
+        } catch (Exception exception) {
+            throw new RuntimeException(
+                "Could not load database settings.",
+                exception
             );
 
             exception.printStackTrace();
@@ -83,6 +62,9 @@ public final class DatabaseConnection {
                 "db.password",
                 DEFAULT_PASSWORD
             );
+
+    public static Connection getConnection()
+        throws SQLException {
 
         return DriverManager.getConnection(
             url,
