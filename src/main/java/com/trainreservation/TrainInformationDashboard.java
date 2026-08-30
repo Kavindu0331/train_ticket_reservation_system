@@ -1,30 +1,91 @@
 package com.trainreservation;
 
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicButtonUI;
-import java.awt.*;
 
 public class TrainInformationDashboard
     extends JFrame {
 
+    private final JFrame previousFrame;
     private final long customerId;
 
+    /*
+     * Main constructor:
+     * Receives the Account Dashboard as previousFrame.
+     */
+    public TrainInformationDashboard(
+        JFrame previousFrame,
+        long customerId
+    ) {
+        this.previousFrame = previousFrame;
+        this.customerId = customerId;
+
+        configureFrame();
+        createInterface();
+
+        addWindowListener(
+            new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosing(
+                    java.awt.event.WindowEvent event
+                ) {
+                    goBack();
+                }
+            }
+        );
+    }
+
+    /*
+     * Keeps compatibility with the old constructor.
+     */
     public TrainInformationDashboard(
         long customerId
     ) {
-        this.customerId = customerId;
+        this(
+            null,
+            customerId
+        );
+    }
 
+    /*
+     * Optional constructor for testing.
+     */
+    public TrainInformationDashboard() {
+        this(
+            null,
+            0L
+        );
+    }
+
+    private void configureFrame() {
         setTitle(
             "Train Information and Search"
         );
 
         setSize(900, 620);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setResizable(false);
 
-        createInterface();
+        setDefaultCloseOperation(
+            JFrame.DO_NOTHING_ON_CLOSE
+        );
+
+        setResizable(false);
     }
 
     private void createInterface() {
@@ -36,6 +97,26 @@ public class TrainInformationDashboard
         );
 
         JPanel header =
+            createHeaderPanel();
+
+        JPanel content =
+            createContentPanel();
+
+        mainPanel.add(
+            header,
+            BorderLayout.NORTH
+        );
+
+        mainPanel.add(
+            content,
+            BorderLayout.CENTER
+        );
+
+        setContentPane(mainPanel);
+    }
+
+    private JPanel createHeaderPanel() {
+        JPanel header =
             new JPanel(new BorderLayout());
 
         header.setBackground(
@@ -43,7 +124,12 @@ public class TrainInformationDashboard
         );
 
         header.setBorder(
-            new EmptyBorder(22, 30, 22, 30)
+            new EmptyBorder(
+                22,
+                30,
+                22,
+                30
+            )
         );
 
         JLabel systemTitle =
@@ -52,10 +138,16 @@ public class TrainInformationDashboard
             );
 
         systemTitle.setFont(
-            new Font("Arial", Font.BOLD, 25)
+            new Font(
+                "Arial",
+                Font.BOLD,
+                25
+            )
         );
 
-        systemTitle.setForeground(Color.WHITE);
+        systemTitle.setForeground(
+            Color.WHITE
+        );
 
         JLabel moduleLabel =
             new JLabel(
@@ -63,10 +155,16 @@ public class TrainInformationDashboard
             );
 
         moduleLabel.setFont(
-            new Font("Arial", Font.BOLD, 15)
+            new Font(
+                "Arial",
+                Font.BOLD,
+                15
+            )
         );
 
-        moduleLabel.setForeground(Color.WHITE);
+        moduleLabel.setForeground(
+            Color.WHITE
+        );
 
         header.add(
             systemTitle,
@@ -78,14 +176,24 @@ public class TrainInformationDashboard
             BorderLayout.EAST
         );
 
+        return header;
+    }
+
+    private JPanel createContentPanel() {
         JPanel card =
-            new JPanel(new GridBagLayout());
+            new JPanel(
+                new GridBagLayout()
+            );
 
         card.setBackground(Color.WHITE);
 
         card.setBorder(
             BorderFactory.createLineBorder(
-                new Color(205, 218, 232)
+                new Color(
+                    205,
+                    218,
+                    232
+                )
             )
         );
 
@@ -107,7 +215,11 @@ public class TrainInformationDashboard
             );
 
         title.setFont(
-            new Font("Arial", Font.BOLD, 30)
+            new Font(
+                "Arial",
+                Font.BOLD,
+                30
+            )
         );
 
         title.setForeground(
@@ -124,11 +236,19 @@ public class TrainInformationDashboard
             );
 
         subtitle.setFont(
-            new Font("Arial", Font.PLAIN, 15)
+            new Font(
+                "Arial",
+                Font.PLAIN,
+                15
+            )
         );
 
         subtitle.setForeground(
-            new Color(80, 90, 105)
+            new Color(
+                80,
+                90,
+                105
+            )
         );
 
         subtitle.setAlignmentX(
@@ -136,19 +256,31 @@ public class TrainInformationDashboard
         );
 
         JButton searchButton =
-            makeButton("SEARCH TRAINS");
+            makeButton(
+                "SEARCH TRAINS"
+            );
 
         JButton schedulesButton =
-            makeButton("VIEW TRAIN SCHEDULES");
+            makeButton(
+                "VIEW TRAIN SCHEDULES"
+            );
 
         JButton fareButton =
-            makeButton("FARE ENQUIRY");
+            makeButton(
+                "FARE ENQUIRY"
+            );
 
-        JButton exitButton =
-            makeButton("EXIT");
+        JButton backButton =
+            makeButton(
+                "BACK"
+            );
 
-        exitButton.setBackground(
-            new Color(95, 110, 125)
+        backButton.setBackground(
+            new Color(
+                95,
+                110,
+                125
+            )
         );
 
         searchButton.setAlignmentX(
@@ -163,7 +295,7 @@ public class TrainInformationDashboard
             Component.CENTER_ALIGNMENT
         );
 
-        exitButton.setAlignmentX(
+        backButton.setAlignmentX(
             Component.CENTER_ALIGNMENT
         );
 
@@ -197,35 +329,30 @@ public class TrainInformationDashboard
             Box.createVerticalStrut(14)
         );
 
-        menu.add(exitButton);
+        menu.add(backButton);
 
         card.add(menu);
 
         JPanel content =
-            new JPanel(new BorderLayout());
+            new JPanel(
+                new BorderLayout()
+            );
 
         content.setOpaque(false);
 
         content.setBorder(
-            new EmptyBorder(30, 45, 30, 45)
+            new EmptyBorder(
+                30,
+                45,
+                30,
+                45
+            )
         );
 
         content.add(
             card,
             BorderLayout.CENTER
         );
-
-        mainPanel.add(
-            header,
-            BorderLayout.NORTH
-        );
-
-        mainPanel.add(
-            content,
-            BorderLayout.CENTER
-        );
-
-        setContentPane(mainPanel);
 
         searchButton.addActionListener(
             event -> openSearch()
@@ -239,33 +366,55 @@ public class TrainInformationDashboard
             event -> openFareEnquiry()
         );
 
-        exitButton.addActionListener(
-            event -> exitApplication()
+        backButton.addActionListener(
+            event -> goBack()
         );
+
+        return content;
     }
 
-    private JButton makeButton(String text) {
+    private JButton makeButton(
+        String text
+    ) {
         JButton button =
             new JButton(text);
 
-        button.setUI(new BasicButtonUI());
+        button.setUI(
+            new BasicButtonUI()
+        );
 
         button.setPreferredSize(
-            new Dimension(300, 48)
+            new Dimension(
+                300,
+                48
+            )
         );
 
         button.setMaximumSize(
-            new Dimension(300, 48)
+            new Dimension(
+                300,
+                48
+            )
         );
 
         button.setBackground(
-            new Color(35, 110, 200)
+            new Color(
+                35,
+                110,
+                200
+            )
         );
 
-        button.setForeground(Color.WHITE);
+        button.setForeground(
+            Color.WHITE
+        );
 
         button.setFont(
-            new Font("Arial", Font.BOLD, 13)
+            new Font(
+                "Arial",
+                Font.BOLD,
+                13
+            )
         );
 
         button.setFocusPainted(false);
@@ -284,42 +433,152 @@ public class TrainInformationDashboard
     private void openSearch() {
         setVisible(false);
 
-        new ScheduleSearchFrame(
-            this,
-            customerId
-        ).setVisible(true);
+        try {
+            ScheduleSearchFrame searchFrame =
+                new ScheduleSearchFrame(
+                    this,
+                    customerId
+                );
+
+            searchFrame.setVisible(true);
+
+        } catch (Throwable error) {
+            setVisible(true);
+
+            showOpeningError(
+                "Schedule Search",
+                error
+            );
+        }
     }
 
     private void openSchedules() {
         setVisible(false);
 
-        new TrainSchedulesFrame(
-            this
-        ).setVisible(true);
+        try {
+            TrainSchedulesFrame schedulesFrame =
+                new TrainSchedulesFrame(
+                    this
+                );
+
+            schedulesFrame.setVisible(true);
+
+        } catch (Throwable error) {
+            setVisible(true);
+
+            showOpeningError(
+                "Train Schedules",
+                error
+            );
+        }
     }
 
     private void openFareEnquiry() {
         setVisible(false);
 
-        new FareEnquiryFrame(
-            this
-        ).setVisible(true);
+        try {
+            FareEnquiryFrame fareFrame =
+                new FareEnquiryFrame(
+                    this
+                );
+
+            fareFrame.setVisible(true);
+
+        } catch (Throwable error) {
+            setVisible(true);
+
+            showOpeningError(
+                "Fare Enquiry",
+                error
+            );
+        }
     }
 
-    private void exitApplication() {
-        int answer =
-            JOptionPane.showConfirmDialog(
-                this,
-                "Do you want to exit?",
-                "Confirm Exit",
-                JOptionPane.YES_NO_OPTION
+    /*
+     * Returns to the Account Dashboard.
+     */
+    private void goBack() {
+        dispose();
+
+        if (previousFrame != null) {
+            previousFrame.setVisible(true);
+            previousFrame.toFront();
+            previousFrame.requestFocus();
+            return;
+        }
+
+        /*
+         * Fallback used only when this dashboard was opened
+         * using the old TrainInformationDashboard(long)
+         * constructor.
+         */
+        try {
+            AccountDashboardFrame accountDashboard =
+                new AccountDashboardFrame(
+                    customerId,
+                    "Customer",
+                    "CUSTOMER"
+                );
+
+            accountDashboard.setVisible(true);
+
+        } catch (Throwable error) {
+            showOpeningError(
+                "Account Dashboard",
+                error
             );
+        }
+    }
+
+    private void showOpeningError(
+        String windowName,
+        Throwable error
+    ) {
+        error.printStackTrace();
+
+        String message =
+            error.getMessage();
 
         if (
-            answer
-                == JOptionPane.YES_OPTION
+            message == null
+                || message.isBlank()
         ) {
-            System.exit(0);
+            message = "Unknown error";
         }
+
+        JOptionPane.showMessageDialog(
+            this,
+            "Could not open "
+                + windowName
+                + ".\n"
+                + error.getClass()
+                    .getSimpleName()
+                + ": "
+                + message,
+            windowName + " Error",
+            JOptionPane.ERROR_MESSAGE
+        );
+    }
+
+    public long getCustomerId() {
+        return customerId;
+    }
+
+    /*
+     * Allows this dashboard to be tested separately.
+     */
+    public static void main(
+        String[] args
+    ) {
+        javax.swing.SwingUtilities.invokeLater(
+            () -> {
+                TrainInformationDashboard dashboard =
+                    new TrainInformationDashboard(
+                        1L
+                    );
+
+                dashboard.setVisible(true);
+            }
+        );
     }
 }

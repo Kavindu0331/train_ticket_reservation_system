@@ -30,18 +30,40 @@ public class CustomerDashboard extends JFrame {
         String customerName
     ) {
         this.customerId = customerId;
-        this.customerName = customerName;
 
+        this.customerName =
+            customerName == null
+                || customerName.isBlank()
+                ? "Customer"
+                : customerName;
+
+        configureFrame();
+        createInterface();
+    }
+
+    /*
+     * Optional constructor for testing.
+     */
+    public CustomerDashboard() {
+        this(
+            0L,
+            "Customer"
+        );
+    }
+
+    private void configureFrame() {
         setTitle(
-            "Train Reservation - Customer Dashboard"
+            "Train Reservation - Booking Dashboard"
         );
 
         setSize(1000, 650);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setResizable(false);
 
-        createInterface();
+        setDefaultCloseOperation(
+            JFrame.EXIT_ON_CLOSE
+        );
+
+        setResizable(false);
     }
 
     private void createInterface() {
@@ -52,15 +74,40 @@ public class CustomerDashboard extends JFrame {
             new Color(238, 244, 250)
         );
 
-        JPanel header =
+        JPanel headerPanel =
+            createHeaderPanel();
+
+        JPanel centerPanel =
+            createCenterPanel();
+
+        mainPanel.add(
+            headerPanel,
+            BorderLayout.NORTH
+        );
+
+        mainPanel.add(
+            centerPanel,
+            BorderLayout.CENTER
+        );
+
+        setContentPane(mainPanel);
+    }
+
+    private JPanel createHeaderPanel() {
+        JPanel headerPanel =
             new JPanel(new BorderLayout());
 
-        header.setBackground(
+        headerPanel.setBackground(
             new Color(15, 75, 140)
         );
 
-        header.setBorder(
-            new EmptyBorder(22, 30, 22, 30)
+        headerPanel.setBorder(
+            new EmptyBorder(
+                22,
+                30,
+                22,
+                30
+            )
         );
 
         JLabel systemTitle =
@@ -76,7 +123,9 @@ public class CustomerDashboard extends JFrame {
             )
         );
 
-        systemTitle.setForeground(Color.WHITE);
+        systemTitle.setForeground(
+            Color.WHITE
+        );
 
         JLabel welcomeLabel =
             new JLabel(
@@ -91,58 +140,145 @@ public class CustomerDashboard extends JFrame {
             )
         );
 
-        welcomeLabel.setForeground(Color.WHITE);
+        welcomeLabel.setForeground(
+            Color.WHITE
+        );
 
-        header.add(
+        headerPanel.add(
             systemTitle,
             BorderLayout.WEST
         );
 
-        header.add(
+        headerPanel.add(
             welcomeLabel,
             BorderLayout.EAST
         );
 
-        JPanel menu =
+        return headerPanel;
+    }
+
+    private JPanel createCenterPanel() {
+        JPanel centerPanel =
             new JPanel(
-                new GridLayout(3, 1, 0, 15)
+                new BorderLayout(25, 0)
             );
 
-        menu.setBackground(Color.WHITE);
+        centerPanel.setOpaque(false);
 
-        menu.setBorder(
-            new EmptyBorder(70, 22, 70, 22)
+        centerPanel.setBorder(
+            new EmptyBorder(
+                25,
+                25,
+                25,
+                25
+            )
         );
 
-        menu.setPreferredSize(
-            new Dimension(280, 0)
+        JPanel menuPanel =
+            createMenuPanel();
+
+        JPanel contentPanel =
+            createContentPanel();
+
+        centerPanel.add(
+            menuPanel,
+            BorderLayout.WEST
+        );
+
+        centerPanel.add(
+            contentPanel,
+            BorderLayout.CENTER
+        );
+
+        return centerPanel;
+    }
+
+    private JPanel createMenuPanel() {
+        JPanel menuPanel =
+            new JPanel(
+                new GridLayout(
+                    3,
+                    1,
+                    0,
+                    15
+                )
+            );
+
+        menuPanel.setBackground(
+            Color.WHITE
+        );
+
+        menuPanel.setBorder(
+            new EmptyBorder(
+                70,
+                22,
+                70,
+                22
+            )
+        );
+
+        menuPanel.setPreferredSize(
+            new Dimension(
+                280,
+                0
+            )
         );
 
         JButton searchButton =
-            makeButton("Search Schedules");
+            makeButton(
+                "SEARCH SCHEDULES"
+            );
 
         JButton bookingsButton =
-            makeButton("My Bookings");
+            makeButton(
+                "MY BOOKINGS"
+            );
 
-        JButton logoutButton =
-            makeButton("Logout");
+        JButton backButton =
+            makeButton(
+                "BACK TO ACCOUNT"
+            );
 
-        logoutButton.setBackground(
-            new Color(190, 55, 55)
+        backButton.setBackground(
+            new Color(90, 105, 120)
         );
 
-        menu.add(searchButton);
-        menu.add(bookingsButton);
-        menu.add(logoutButton);
+        menuPanel.add(searchButton);
+        menuPanel.add(bookingsButton);
+        menuPanel.add(backButton);
 
-        JPanel content =
-            new JPanel(new GridBagLayout());
+        searchButton.addActionListener(
+            event -> openScheduleSearch()
+        );
 
-        content.setBackground(Color.WHITE);
+        bookingsButton.addActionListener(
+            event -> openMyBookings()
+        );
 
-        content.setBorder(
+        backButton.addActionListener(
+            event -> returnToAccountDashboard()
+        );
+
+        return menuPanel;
+    }
+
+    private JPanel createContentPanel() {
+        JPanel contentPanel =
+            new JPanel(
+                new GridBagLayout()
+            );
+
+        contentPanel.setBackground(
+            Color.WHITE
+        );
+
+        contentPanel.setBorder(
             BorderFactory.createLineBorder(
-                new Color(210, 220, 232)
+                new Color(
+                    210,
+                    220,
+                    232
+                )
             )
         );
 
@@ -193,20 +329,24 @@ public class CustomerDashboard extends JFrame {
         );
 
         subtitle.setForeground(
-            new Color(80, 90, 105)
+            new Color(
+                80,
+                90,
+                105
+            )
         );
 
         subtitle.setAlignmentX(
             Component.CENTER_ALIGNMENT
         );
 
-        JLabel bookingInformation =
+        JLabel informationLabel =
             new JLabel(
                 "Passenger details, fare calculation, "
                     + "confirmation and cancellation"
             );
 
-        bookingInformation.setFont(
+        informationLabel.setFont(
             new Font(
                 "Arial",
                 Font.PLAIN,
@@ -214,11 +354,15 @@ public class CustomerDashboard extends JFrame {
             )
         );
 
-        bookingInformation.setForeground(
-            new Color(100, 108, 120)
+        informationLabel.setForeground(
+            new Color(
+                100,
+                108,
+                120
+            )
         );
 
-        bookingInformation.setAlignmentX(
+        informationLabel.setAlignmentX(
             Component.CENTER_ALIGNMENT
         );
 
@@ -234,56 +378,57 @@ public class CustomerDashboard extends JFrame {
             Box.createVerticalStrut(8)
         );
 
-        welcomePanel.add(bookingInformation);
-
-        content.add(welcomePanel);
-
-        JPanel center =
-            new JPanel(
-                new BorderLayout(25, 0)
-            );
-
-        center.setOpaque(false);
-
-        center.setBorder(
-            new EmptyBorder(25, 25, 25, 25)
+        welcomePanel.add(
+            informationLabel
         );
 
-        center.add(
-            menu,
-            BorderLayout.WEST
-        );
+        contentPanel.add(welcomePanel);
 
-        center.add(
-            content,
-            BorderLayout.CENTER
-        );
-
-        mainPanel.add(
-            header,
-            BorderLayout.NORTH
-        );
-
-        mainPanel.add(
-            center,
-            BorderLayout.CENTER
-        );
-
-        setContentPane(mainPanel);
-
-        searchButton.addActionListener(
-            event -> openScheduleSearch()
-        );
-
-        bookingsButton.addActionListener(
-            event -> openMyBookings()
-        );
-
-        logoutButton.addActionListener(
-            event -> logout()
-        );
+        return contentPanel;
     }
 
+    private JButton makeButton(
+        String buttonText
+    ) {
+        JButton button =
+            new JButton(buttonText);
+
+        button.setUI(
+            new BasicButtonUI()
+        );
+
+        button.setBackground(
+            new Color(25, 105, 195)
+        );
+
+        button.setForeground(
+            Color.WHITE
+        );
+
+        button.setFont(
+            new Font(
+                "Arial",
+                Font.BOLD,
+                14
+            )
+        );
+
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setOpaque(true);
+
+        button.setCursor(
+            Cursor.getPredefinedCursor(
+                Cursor.HAND_CURSOR
+            )
+        );
+
+        return button;
+    }
+
+    /*
+     * Opens the schedule-search window.
+     */
     private void openScheduleSearch() {
         try {
             ScheduleSearchFrame scheduleFrame =
@@ -296,20 +441,17 @@ public class CustomerDashboard extends JFrame {
             setVisible(false);
 
         } catch (Throwable error) {
-            error.printStackTrace();
-
-            JOptionPane.showMessageDialog(
-                this,
-                "Could not open schedule search.\n"
-                    + error.getClass().getSimpleName()
-                    + ": "
-                    + error.getMessage(),
-                "Schedule Error",
-                JOptionPane.ERROR_MESSAGE
+            showError(
+                "Could not open schedule search.",
+                "Schedule Search Error",
+                error
             );
         }
     }
 
+    /*
+     * Opens Saumaya's booking-management window.
+     */
     private void openMyBookings() {
         try {
             MyBookingsFrame bookingsFrame =
@@ -322,71 +464,67 @@ public class CustomerDashboard extends JFrame {
             setVisible(false);
 
         } catch (Throwable error) {
-            error.printStackTrace();
-
-            JOptionPane.showMessageDialog(
-                this,
-                "Could not open My Bookings.\n"
-                    + error.getClass().getSimpleName()
-                    + ": "
-                    + error.getMessage(),
+            showError(
+                "Could not open My Bookings.",
                 "My Bookings Error",
-                JOptionPane.ERROR_MESSAGE
+                error
             );
         }
     }
 
-    private JButton makeButton(String text) {
-        JButton button =
-            new JButton(text);
+    /*
+     * Returns to AccountDashboardFrame.
+     */
+    private void returnToAccountDashboard() {
+        try {
+            AccountDashboardFrame accountDashboard =
+                new AccountDashboardFrame(
+                    customerId,
+                    customerName,
+                    "CUSTOMER"
+                );
 
-        button.setUI(
-            new BasicButtonUI()
-        );
-
-        button.setBackground(
-            new Color(25, 105, 195)
-        );
-
-        button.setForeground(Color.WHITE);
-
-        button.setFont(
-            new Font(
-                "Arial",
-                Font.BOLD,
-                14
-            )
-        );
-
-        button.setFocusPainted(false);
-        button.setBorderPainted(false);
-
-        button.setCursor(
-            Cursor.getPredefinedCursor(
-                Cursor.HAND_CURSOR
-            )
-        );
-
-        return button;
-    }
-
-    private void logout() {
-        int answer =
-            JOptionPane.showConfirmDialog(
-                this,
-                "Do you want to log out?",
-                "Confirm Logout",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE
-            );
-
-        if (answer == JOptionPane.YES_OPTION) {
-            LoginFrame loginFrame =
-                new LoginFrame();
-
-            loginFrame.setVisible(true);
+            accountDashboard.setVisible(true);
             dispose();
+
+        } catch (Throwable error) {
+            showError(
+                "Could not return to the Account Dashboard.",
+                "Dashboard Error",
+                error
+            );
         }
+    }
+
+    private void showError(
+        String description,
+        String title,
+        Throwable error
+    ) {
+        error.printStackTrace();
+
+        String errorMessage =
+            error.getMessage();
+
+        if (
+            errorMessage == null
+                || errorMessage.isBlank()
+        ) {
+            errorMessage =
+                "Unknown error";
+        }
+
+        JOptionPane.showMessageDialog(
+            this,
+            description
+                + "\n"
+                + error.getClass()
+                    .getSimpleName()
+                + ": "
+                + errorMessage,
+            title,
+            JOptionPane.ERROR_MESSAGE
+        );
     }
 
     public long getCustomerId() {
@@ -395,5 +533,24 @@ public class CustomerDashboard extends JFrame {
 
     public String getCustomerName() {
         return customerName;
+    }
+
+    /*
+     * Runs this dashboard separately for testing.
+     */
+    public static void main(
+        String[] args
+    ) {
+        javax.swing.SwingUtilities.invokeLater(
+            () -> {
+                CustomerDashboard dashboard =
+                    new CustomerDashboard(
+                        1L,
+                        "Customer"
+                    );
+
+                dashboard.setVisible(true);
+            }
+        );
     }
 }

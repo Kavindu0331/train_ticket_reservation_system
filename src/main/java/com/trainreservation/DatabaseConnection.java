@@ -1,6 +1,5 @@
 package com.trainreservation;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,17 +8,20 @@ import java.util.Properties;
 
 public final class DatabaseConnection {
 
-    private static final Properties properties =
-        new Properties();
+    private static final Properties properties = new Properties();
+
+    // Change these defaults to match your database.
+    private static final String DEFAULT_URL =
+        "jdbc:mysql://localhost:3306/train_reservation";
+    private static final String DEFAULT_USERNAME = "root";
+    private static final String DEFAULT_PASSWORD = "";
 
     static {
         try (
             InputStream input =
                 DatabaseConnection.class
                     .getClassLoader()
-                    .getResourceAsStream(
-                        "database.properties"
-                    )
+                    .getResourceAsStream("database.properties")
         ) {
             if (input == null) {
                 throw new RuntimeException(
@@ -34,37 +36,33 @@ public final class DatabaseConnection {
                 "Could not load database settings.",
                 exception
             );
-
-            exception.printStackTrace();
         }
+    }
+
+    private DatabaseConnection() {
+        // Prevent creation of DatabaseConnection objects.
     }
 
     public static Connection getConnection()
         throws SQLException {
 
-        String url =
-            getSetting(
-                "TRAIN_DB_URL",
-                "db.url",
-                DEFAULT_URL
-            );
+        String url = getSetting(
+            "TRAIN_DB_URL",
+            "db.url",
+            DEFAULT_URL
+        );
 
-        String username =
-            getSetting(
-                "TRAIN_DB_USERNAME",
-                "db.username",
-                DEFAULT_USERNAME
-            );
+        String username = getSetting(
+            "TRAIN_DB_USERNAME",
+            "db.username",
+            DEFAULT_USERNAME
+        );
 
-        String password =
-            getSetting(
-                "TRAIN_DB_PASSWORD",
-                "db.password",
-                DEFAULT_PASSWORD
-            );
-
-    public static Connection getConnection()
-        throws SQLException {
+        String password = getSetting(
+            "TRAIN_DB_PASSWORD",
+            "db.password",
+            DEFAULT_PASSWORD
+        );
 
         return DriverManager.getConnection(
             url,
@@ -89,9 +87,7 @@ public final class DatabaseConnection {
         }
 
         String propertyValue =
-            PROPERTIES.getProperty(
-                propertyName
-            );
+            properties.getProperty(propertyName);
 
         if (
             propertyValue != null
@@ -105,8 +101,7 @@ public final class DatabaseConnection {
 
     public static boolean testConnection() {
         try (
-            Connection connection =
-                getConnection()
+            Connection connection = getConnection()
         ) {
             return connection != null
                 && !connection.isClosed();

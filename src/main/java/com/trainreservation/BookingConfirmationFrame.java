@@ -1,18 +1,35 @@
 package com.trainreservation;
 
-import com.trainreservation.CustomerDashboard;
-import com.trainreservation.DatabaseConnection;
-import com.trainreservation.PassengerDetailsFrame;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.UUID;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicButtonUI;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.math.BigDecimal;
-import java.sql.*;
-import java.util.List;
-import java.util.UUID;
 
 public class BookingConfirmationFrame extends JFrame {
 
@@ -226,94 +243,176 @@ public class BookingConfirmationFrame extends JFrame {
     }
 
     private void loadBookingDetails() {
-        String sql = """
+        if (passengers == null || passengers.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                this,
+                "Please add at least one passenger.",
+                "Passenger Required",
+                JOptionPane.WARNING_MESSAGE
+            );
+            confirmButton.setEnabled(false);
+            return;
+        }
+
+        String scheduleSql = """
             SELECT
-                u.full_name,
                 t.train_number,
                 t.train_name,
                 s.departure_station,
                 s.arrival_station,
                 s.journey_date,
-                s.base_fare,
-                source.station_id AS source_station_id,
-                destination.station_id AS destination_station_id
+                s.base_fare
             FROM schedules s
             JOIN trains t
                 ON t.train_id = s.train_id
-            JOIN users u
-                ON u.user_id = ?
-            JOIN stations source
-                ON source.station_name = s.departure_station
-            JOIN stations destination
-                ON destination.station_name = s.arrival_station
             WHERE s.schedule_id = ?
+              AND s.status = 'SCHEDULED'
+            """;
+
+        String customerSql = """
+            SELECT full_name
+            FROM users
+            WHERE user_id = ?
+            LIMIT 1
+            """;
+
+        String stationSql = """
+            SELECT station_id
+            FROM stations
+            WHERE LOWER(TRIM(station_name)) = LOWER(TRIM(?))
+            LIMIT 1
             """;
 
         try (
             Connection connection =
-                DatabaseConnection.getConnection();
-
-            PreparedStatement statement =
-                connection.prepareStatement(sql)
+                DatabaseConnection.getConnection()
         ) {
-            statement.setLong(1, customerId);
-            statement.setLong(2, scheduleId);
+            try (
+                PreparedStatement customerStatement =
+                    connection.prepareStatement(customerSql)
+            ) {
+                customerStatement.setLong(1, customerId);
 
-            try (ResultSet result = statement.executeQuery()) {
-                if (!result.next()) {
-                    JOptionPane.showMessageDialog(
-                        this,
-                        "The selected schedule could not be found.",
-                        "Schedule Not Found",
-                        JOptionPane.ERROR_MESSAGE
-                    );
-                    confirmButton.setEnabled(false);
-                    return;
+                try (
+                    ResultSet result =
+                        customerStatement.executeQuery()
+                ) {
+                    if (!result.next()) {
+                        throw new SQLException(
+                            "The logged-in customer was not found. "
+                                + "Received customer ID: "
+                                + customerId
+                                + ". Please log out and log in again."
+                        );
+                    }
+
+                    customerName =
+                        result.getString("full_name");
                 }
-
-                customerName = result.getString("full_name");
-
-                trainDetails =
-                    result.getString("train_number")
-                        + " - "
-                        + result.getString("train_name");
-
-                route =
-                    result.getString("departure_station")
-                        + " to "
-                        + result.getString("arrival_station");
-
-                journeyDate =
-                    result.getDate("journey_date");
-
-                baseFare =
-                    result.getBigDecimal("base_fare");
-
-                sourceStationId =
-                    result.getLong("source_station_id");
-
-                destinationStationId =
-                    result.getLong("destination_station_id");
-
-                customerLabel.setText(customerName);
-                trainLabel.setText(trainDetails);
-                routeLabel.setText(route);
-                dateLabel.setText(journeyDate.toString());
-
-                passengerCountLabel.setText(
-                    String.valueOf(passengers.size())
-                );
-
-                totalFareLabel.setText(
-                    "Rs. " + calculateTotalFare()
-                );
             }
+
+            String departureStation;
+            String arrivalStation;
+
+            try (
+                PreparedStatement scheduleStatement =
+                    connection.prepareStatement(scheduleSql)
+            ) {
+                scheduleStatement.setLong(1, scheduleId);
+
+                try (
+                    ResultSet result =
+                        scheduleStatement.executeQuery()
+                ) {
+                    if (!result.next()) {
+                        throw new SQLException(
+                            "The selected active schedule was not found. "
+                                + "Received schedule ID: "
+                                + scheduleId
+                                + "."
+                        );
+                    }
+
+                    trainDetails =
+                        result.getString("train_number")
+                            + " - "
+                            + result.getString("train_name");
+
+                    departureStation =
+                        result.getString("departure_station");
+
+                    arrivalStation =
+                        result.getString("arrival_station");
+
+                    route =
+                        departureStation
+                            + " to "
+                            + arrivalStation;
+
+                    journeyDate =
+                        result.getDate("journey_date");
+
+                    baseFare =
+                        result.getBigDecimal("base_fare");
+                }
+            }
+
+            sourceStationId = findStationId(
+                connection,
+                stationSql,
+                departureStation
+            );
+
+            destinationStationId = findStationId(
+                connection,
+                stationSql,
+                arrivalStation
+            );
+
+            customerLabel.setText(customerName);
+            trainLabel.setText(trainDetails);
+            routeLabel.setText(route);
+            dateLabel.setText(journeyDate.toString());
+
+            passengerCountLabel.setText(
+                String.valueOf(passengers.size())
+            );
+
+            totalFareLabel.setText(
+                "Rs. " + calculateTotalFare()
+            );
+
         } catch (SQLException exception) {
             showDatabaseError(
                 "Could not load booking details:\n"
                     + exception.getMessage()
             );
             confirmButton.setEnabled(false);
+        }
+    }
+
+    private long findStationId(
+        Connection connection,
+        String stationSql,
+        String stationName
+    ) throws SQLException {
+        try (
+            PreparedStatement statement =
+                connection.prepareStatement(stationSql)
+        ) {
+            statement.setString(1, stationName);
+
+            try (ResultSet result = statement.executeQuery()) {
+                if (!result.next()) {
+                    throw new SQLException(
+                        "Station '"
+                            + stationName
+                            + "' is missing from the stations table."
+                    );
+                }
+
+                return result.getLong("station_id");
+            }
         }
     }
 
