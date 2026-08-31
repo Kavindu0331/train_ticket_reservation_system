@@ -2,6 +2,7 @@ package com.trainreservation;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -29,45 +30,69 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicButtonUI;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 
 public class BookingConfirmationFrame extends JFrame {
 
     private final JFrame previousFrame;
     private final long customerId;
     private final long scheduleId;
-    private final List<PassengerDetailsFrame.Passenger> passengers;
+
+    private final List<
+        PassengerDetailsFrame.Passenger
+    > passengers;
 
     private String customerName;
     private String trainDetails;
     private String route;
+
     private Date journeyDate;
-    private BigDecimal baseFare = BigDecimal.ZERO;
+
+    private BigDecimal baseFare =
+        BigDecimal.ZERO;
+
     private long sourceStationId;
     private long destinationStationId;
 
-    private final JLabel customerLabel = new JLabel("-");
-    private final JLabel trainLabel = new JLabel("-");
-    private final JLabel routeLabel = new JLabel("-");
-    private final JLabel dateLabel = new JLabel("-");
-    private final JLabel passengerCountLabel = new JLabel("-");
-    private final JLabel totalFareLabel = new JLabel("-");
+    private final JLabel customerLabel =
+        new JLabel("-");
+
+    private final JLabel trainLabel =
+        new JLabel("-");
+
+    private final JLabel routeLabel =
+        new JLabel("-");
+
+    private final JLabel dateLabel =
+        new JLabel("-");
+
+    private final JLabel passengerCountLabel =
+        new JLabel("-");
+
+    private final JLabel totalFareLabel =
+        new JLabel("-");
 
     private final JButton confirmButton =
         makeButton("CONFIRM BOOKING");
 
     private final DefaultTableModel tableModel =
         new DefaultTableModel(
-            new String[]{
+            new String[] {
                 "Passenger Name",
                 "NIC / Passport",
                 "Age",
                 "Gender",
-                "Class"
+                "Travel Class"
             },
             0
         ) {
-            public boolean isCellEditable(int row, int column) {
+            @Override
+            public boolean isCellEditable(
+                int row,
+                int column
+            ) {
                 return false;
             }
         };
@@ -76,7 +101,9 @@ public class BookingConfirmationFrame extends JFrame {
         JFrame previousFrame,
         long customerId,
         long scheduleId,
-        List<PassengerDetailsFrame.Passenger> passengers
+        List<
+            PassengerDetailsFrame.Passenger
+        > passengers
     ) {
         this.previousFrame = previousFrame;
         this.customerId = customerId;
@@ -86,109 +113,133 @@ public class BookingConfirmationFrame extends JFrame {
         setTitle("Booking Confirmation");
         setSize(950, 680);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+
+        setDefaultCloseOperation(
+            DO_NOTHING_ON_CLOSE
+        );
+
         setResizable(false);
 
         createInterface();
         loadBookingDetails();
         loadPassengers();
 
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(
-                java.awt.event.WindowEvent event
-            ) {
-                returnToPreviousPage();
+        addWindowListener(
+            new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosing(
+                    java.awt.event.WindowEvent event
+                ) {
+                    returnToPreviousPage();
+                }
             }
-        });
+        );
     }
 
     private void createInterface() {
-        JPanel mainPanel = new JPanel(new BorderLayout(15, 15));
-        mainPanel.setBackground(new Color(238, 244, 250));
-        mainPanel.setBorder(new EmptyBorder(25, 30, 25, 30));
+        JPanel mainPanel =
+            new JPanel(
+                new BorderLayout(15, 15)
+            );
 
-        JLabel title = new JLabel(
-            "Confirm Your Booking",
-            SwingConstants.CENTER
+        mainPanel.setBackground(
+            new Color(238, 244, 250)
         );
 
-        title.setFont(new Font("Arial", Font.BOLD, 28));
-        title.setForeground(new Color(15, 75, 140));
-
-        JPanel detailsPanel = new JPanel(new GridBagLayout());
-        detailsPanel.setBackground(Color.WHITE);
-        detailsPanel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(
-                new Color(210, 220, 232)
-            ),
-            new EmptyBorder(15, 25, 15, 25)
-        ));
-
-        GridBagConstraints c = new GridBagConstraints();
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.insets = new Insets(6, 10, 6, 10);
-
-        addDetail(detailsPanel, c, "Customer", customerLabel, 0);
-        addDetail(detailsPanel, c, "Train", trainLabel, 1);
-        addDetail(detailsPanel, c, "Route", routeLabel, 2);
-        addDetail(detailsPanel, c, "Journey Date", dateLabel, 3);
-        addDetail(
-            detailsPanel,
-            c,
-            "Passenger Count",
-            passengerCountLabel,
-            4
-        );
-        addDetail(
-            detailsPanel,
-            c,
-            "Total Fare",
-            totalFareLabel,
-            5
+        mainPanel.setBorder(
+            new EmptyBorder(
+                25,
+                30,
+                25,
+                30
+            )
         );
 
-        JTable passengerTable = new JTable(tableModel);
-        passengerTable.setRowHeight(29);
-        passengerTable.setFont(
-            new Font("Arial", Font.PLAIN, 13)
+        JLabel title =
+            new JLabel(
+                "Confirm Your Booking",
+                SwingConstants.CENTER
+            );
+
+        title.setFont(
+            new Font(
+                "Arial",
+                Font.BOLD,
+                28
+            )
         );
 
-        passengerTable.getTableHeader().setFont(
-            new Font("Arial", Font.BOLD, 13)
-        );
-
-        passengerTable.getTableHeader().setBackground(
+        title.setForeground(
             new Color(15, 75, 140)
         );
 
-        passengerTable.getTableHeader().setForeground(
-            Color.WHITE
-        );
+        JPanel detailsPanel =
+            createDetailsPanel();
+
+        JTable passengerTable =
+            createPassengerTable();
 
         JScrollPane scrollPane =
-            new JScrollPane(passengerTable);
+            new JScrollPane(
+                passengerTable
+            );
 
-        JButton backButton = makeButton("BACK");
-
-        JPanel buttonPanel = new JPanel(
-            new FlowLayout(FlowLayout.RIGHT, 12, 0)
+        scrollPane.setBorder(
+            BorderFactory.createLineBorder(
+                new Color(165, 185, 208)
+            )
         );
+
+        scrollPane.getViewport()
+            .setBackground(Color.WHITE);
+
+        JButton backButton =
+            makeButton("BACK");
+
+        JPanel buttonPanel =
+            new JPanel(
+                new FlowLayout(
+                    FlowLayout.RIGHT,
+                    12,
+                    0
+                )
+            );
 
         buttonPanel.setOpaque(false);
         buttonPanel.add(backButton);
         buttonPanel.add(confirmButton);
 
-        JPanel centerPanel = new JPanel(
-            new BorderLayout(12, 12)
-        );
+        JPanel centerPanel =
+            new JPanel(
+                new BorderLayout(12, 12)
+            );
 
         centerPanel.setOpaque(false);
-        centerPanel.add(detailsPanel, BorderLayout.NORTH);
-        centerPanel.add(scrollPane, BorderLayout.CENTER);
-        centerPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        mainPanel.add(title, BorderLayout.NORTH);
-        mainPanel.add(centerPanel, BorderLayout.CENTER);
+        centerPanel.add(
+            detailsPanel,
+            BorderLayout.NORTH
+        );
+
+        centerPanel.add(
+            scrollPane,
+            BorderLayout.CENTER
+        );
+
+        centerPanel.add(
+            buttonPanel,
+            BorderLayout.SOUTH
+        );
+
+        mainPanel.add(
+            title,
+            BorderLayout.NORTH
+        );
+
+        mainPanel.add(
+            centerPanel,
+            BorderLayout.CENTER
+        );
 
         setContentPane(mainPanel);
 
@@ -201,55 +252,387 @@ public class BookingConfirmationFrame extends JFrame {
         );
     }
 
+    private JPanel createDetailsPanel() {
+        JPanel detailsPanel =
+            new JPanel(
+                new GridBagLayout()
+            );
+
+        detailsPanel.setBackground(
+            Color.WHITE
+        );
+
+        detailsPanel.setBorder(
+            BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(
+                    new Color(210, 220, 232)
+                ),
+                new EmptyBorder(
+                    15,
+                    25,
+                    15,
+                    25
+                )
+            )
+        );
+
+        GridBagConstraints constraints =
+            new GridBagConstraints();
+
+        constraints.fill =
+            GridBagConstraints.HORIZONTAL;
+
+        constraints.insets =
+            new Insets(6, 10, 6, 10);
+
+        addDetail(
+            detailsPanel,
+            constraints,
+            "Customer",
+            customerLabel,
+            0
+        );
+
+        addDetail(
+            detailsPanel,
+            constraints,
+            "Train",
+            trainLabel,
+            1
+        );
+
+        addDetail(
+            detailsPanel,
+            constraints,
+            "Route",
+            routeLabel,
+            2
+        );
+
+        addDetail(
+            detailsPanel,
+            constraints,
+            "Journey Date",
+            dateLabel,
+            3
+        );
+
+        addDetail(
+            detailsPanel,
+            constraints,
+            "Passenger Count",
+            passengerCountLabel,
+            4
+        );
+
+        addDetail(
+            detailsPanel,
+            constraints,
+            "Total Fare",
+            totalFareLabel,
+            5
+        );
+
+        return detailsPanel;
+    }
+
+    private JTable createPassengerTable() {
+        JTable passengerTable =
+            new JTable(tableModel);
+
+        passengerTable.setRowHeight(34);
+
+        passengerTable.setFont(
+            new Font(
+                "Arial",
+                Font.PLAIN,
+                13
+            )
+        );
+
+        passengerTable.setForeground(
+            new Color(30, 40, 55)
+        );
+
+        passengerTable.setBackground(
+            Color.WHITE
+        );
+
+        passengerTable.setSelectionBackground(
+            new Color(35, 125, 205)
+        );
+
+        passengerTable.setSelectionForeground(
+            Color.WHITE
+        );
+
+        passengerTable.setGridColor(
+            new Color(200, 215, 230)
+        );
+
+        passengerTable.setShowGrid(true);
+        passengerTable.setFillsViewportHeight(true);
+        passengerTable.setAutoCreateRowSorter(true);
+
+        passengerTable.setAutoResizeMode(
+            JTable.AUTO_RESIZE_ALL_COLUMNS
+        );
+
+        passengerTable
+            .getColumnModel()
+            .getColumn(0)
+            .setPreferredWidth(180);
+
+        passengerTable
+            .getColumnModel()
+            .getColumn(1)
+            .setPreferredWidth(180);
+
+        passengerTable
+            .getColumnModel()
+            .getColumn(2)
+            .setPreferredWidth(80);
+
+        passengerTable
+            .getColumnModel()
+            .getColumn(3)
+            .setPreferredWidth(120);
+
+        passengerTable
+            .getColumnModel()
+            .getColumn(4)
+            .setPreferredWidth(140);
+
+        JTableHeader tableHeader =
+            passengerTable.getTableHeader();
+
+        tableHeader.setReorderingAllowed(false);
+
+        tableHeader.setPreferredSize(
+            new Dimension(
+                tableHeader
+                    .getPreferredSize()
+                    .width,
+                42
+            )
+        );
+
+        tableHeader.setBackground(
+            new Color(15, 85, 155)
+        );
+
+        tableHeader.setForeground(
+            Color.WHITE
+        );
+
+        tableHeader.setFont(
+            new Font(
+                "Arial",
+                Font.BOLD,
+                13
+            )
+        );
+
+        tableHeader.setOpaque(true);
+
+        tableHeader.setDefaultRenderer(
+            new DefaultTableCellRenderer() {
+
+                @Override
+                public Component
+                    getTableCellRendererComponent(
+                        JTable table,
+                        Object value,
+                        boolean isSelected,
+                        boolean hasFocus,
+                        int row,
+                        int column
+                    ) {
+
+                    JLabel headerLabel =
+                        (JLabel) super
+                            .getTableCellRendererComponent(
+                                table,
+                                value,
+                                isSelected,
+                                hasFocus,
+                                row,
+                                column
+                            );
+
+                    headerLabel.setText(
+                        value == null
+                            ? ""
+                            : value.toString()
+                    );
+
+                    headerLabel.setHorizontalAlignment(
+                        SwingConstants.CENTER
+                    );
+
+                    headerLabel.setFont(
+                        new Font(
+                            "Arial",
+                            Font.BOLD,
+                            13
+                        )
+                    );
+
+                    headerLabel.setBackground(
+                        new Color(15, 85, 155)
+                    );
+
+                    headerLabel.setForeground(
+                        Color.WHITE
+                    );
+
+                    headerLabel.setOpaque(true);
+
+                    headerLabel.setBorder(
+                        BorderFactory
+                            .createMatteBorder(
+                                0,
+                                0,
+                                0,
+                                1,
+                                new Color(
+                                    210,
+                                    225,
+                                    240
+                                )
+                            )
+                    );
+
+                    return headerLabel;
+                }
+            }
+        );
+
+        DefaultTableCellRenderer
+            centerRenderer =
+                new DefaultTableCellRenderer();
+
+        centerRenderer.setHorizontalAlignment(
+            SwingConstants.CENTER
+        );
+
+        passengerTable
+            .getColumnModel()
+            .getColumn(2)
+            .setCellRenderer(centerRenderer);
+
+        passengerTable
+            .getColumnModel()
+            .getColumn(3)
+            .setCellRenderer(centerRenderer);
+
+        passengerTable
+            .getColumnModel()
+            .getColumn(4)
+            .setCellRenderer(centerRenderer);
+
+        return passengerTable;
+    }
+
     private void addDetail(
         JPanel panel,
-        GridBagConstraints c,
+        GridBagConstraints constraints,
         String text,
         JLabel valueLabel,
         int row
     ) {
-        JLabel label = new JLabel(text);
-        label.setFont(new Font("Arial", Font.BOLD, 13));
+        JLabel label =
+            new JLabel(text);
 
-        valueLabel.setFont(
-            new Font("Arial", Font.PLAIN, 13)
+        label.setFont(
+            new Font(
+                "Arial",
+                Font.BOLD,
+                13
+            )
         );
 
-        c.gridy = row;
-        c.gridx = 0;
-        c.weightx = 0;
-        panel.add(label, c);
+        valueLabel.setFont(
+            new Font(
+                "Arial",
+                Font.PLAIN,
+                13
+            )
+        );
 
-        c.gridx = 1;
-        c.weightx = 1;
-        panel.add(valueLabel, c);
+        constraints.gridy = row;
+        constraints.gridx = 0;
+        constraints.weightx = 0;
+
+        panel.add(
+            label,
+            constraints
+        );
+
+        constraints.gridx = 1;
+        constraints.weightx = 1;
+
+        panel.add(
+            valueLabel,
+            constraints
+        );
     }
 
-    private static JButton makeButton(String text) {
-        JButton button = new JButton(text);
+    private static JButton makeButton(
+        String text
+    ) {
+        JButton button =
+            new JButton(text);
 
-        button.setUI(new BasicButtonUI());
-        button.setPreferredSize(new Dimension(175, 42));
-        button.setBackground(new Color(25, 105, 195));
-        button.setForeground(Color.WHITE);
-        button.setFont(new Font("Arial", Font.BOLD, 12));
+        button.setUI(
+            new BasicButtonUI()
+        );
+
+        button.setPreferredSize(
+            new Dimension(175, 42)
+        );
+
+        button.setBackground(
+            new Color(25, 105, 195)
+        );
+
+        button.setForeground(
+            Color.WHITE
+        );
+
+        button.setFont(
+            new Font(
+                "Arial",
+                Font.BOLD,
+                12
+            )
+        );
+
         button.setFocusPainted(false);
         button.setBorderPainted(false);
+        button.setOpaque(true);
+
         button.setCursor(
-            Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+            Cursor.getPredefinedCursor(
+                Cursor.HAND_CURSOR
+            )
         );
 
         return button;
     }
 
     private void loadBookingDetails() {
-        if (passengers == null || passengers.isEmpty()) {
+        if (
+            passengers == null
+                || passengers.isEmpty()
+        ) {
             JOptionPane.showMessageDialog(
                 this,
                 "Please add at least one passenger.",
                 "Passenger Required",
                 JOptionPane.WARNING_MESSAGE
             );
+
             confirmButton.setEnabled(false);
             return;
         }
@@ -279,35 +662,49 @@ public class BookingConfirmationFrame extends JFrame {
         String stationSql = """
             SELECT station_id
             FROM stations
-            WHERE LOWER(TRIM(station_name)) = LOWER(TRIM(?))
+            WHERE LOWER(TRIM(station_name))
+                = LOWER(TRIM(?))
             LIMIT 1
             """;
 
         try (
             Connection connection =
-                DatabaseConnection.getConnection()
+                DatabaseConnection
+                    .getConnection()
         ) {
             try (
-                PreparedStatement customerStatement =
-                    connection.prepareStatement(customerSql)
+                PreparedStatement
+                    customerStatement =
+                        connection
+                            .prepareStatement(
+                                customerSql
+                            )
             ) {
-                customerStatement.setLong(1, customerId);
+                customerStatement.setLong(
+                    1,
+                    customerId
+                );
 
                 try (
                     ResultSet result =
-                        customerStatement.executeQuery()
+                        customerStatement
+                            .executeQuery()
                 ) {
                     if (!result.next()) {
                         throw new SQLException(
-                            "The logged-in customer was not found. "
+                            "The logged-in customer "
+                                + "was not found. "
                                 + "Received customer ID: "
                                 + customerId
-                                + ". Please log out and log in again."
+                                + ". Please log out "
+                                + "and log in again."
                         );
                     }
 
                     customerName =
-                        result.getString("full_name");
+                        result.getString(
+                            "full_name"
+                        );
                 }
             }
 
@@ -315,18 +712,27 @@ public class BookingConfirmationFrame extends JFrame {
             String arrivalStation;
 
             try (
-                PreparedStatement scheduleStatement =
-                    connection.prepareStatement(scheduleSql)
+                PreparedStatement
+                    scheduleStatement =
+                        connection
+                            .prepareStatement(
+                                scheduleSql
+                            )
             ) {
-                scheduleStatement.setLong(1, scheduleId);
+                scheduleStatement.setLong(
+                    1,
+                    scheduleId
+                );
 
                 try (
                     ResultSet result =
-                        scheduleStatement.executeQuery()
+                        scheduleStatement
+                            .executeQuery()
                 ) {
                     if (!result.next()) {
                         throw new SQLException(
-                            "The selected active schedule was not found. "
+                            "The selected active "
+                                + "schedule was not found. "
                                 + "Received schedule ID: "
                                 + scheduleId
                                 + "."
@@ -334,15 +740,23 @@ public class BookingConfirmationFrame extends JFrame {
                     }
 
                     trainDetails =
-                        result.getString("train_number")
+                        result.getString(
+                            "train_number"
+                        )
                             + " - "
-                            + result.getString("train_name");
+                            + result.getString(
+                                "train_name"
+                            );
 
                     departureStation =
-                        result.getString("departure_station");
+                        result.getString(
+                            "departure_station"
+                        );
 
                     arrivalStation =
-                        result.getString("arrival_station");
+                        result.getString(
+                            "arrival_station"
+                        );
 
                     route =
                         departureStation
@@ -350,36 +764,54 @@ public class BookingConfirmationFrame extends JFrame {
                             + arrivalStation;
 
                     journeyDate =
-                        result.getDate("journey_date");
+                        result.getDate(
+                            "journey_date"
+                        );
 
                     baseFare =
-                        result.getBigDecimal("base_fare");
+                        result.getBigDecimal(
+                            "base_fare"
+                        );
                 }
             }
 
-            sourceStationId = findStationId(
-                connection,
-                stationSql,
-                departureStation
+            sourceStationId =
+                findStationId(
+                    connection,
+                    stationSql,
+                    departureStation
+                );
+
+            destinationStationId =
+                findStationId(
+                    connection,
+                    stationSql,
+                    arrivalStation
+                );
+
+            customerLabel.setText(
+                customerName
             );
 
-            destinationStationId = findStationId(
-                connection,
-                stationSql,
-                arrivalStation
+            trainLabel.setText(
+                trainDetails
             );
 
-            customerLabel.setText(customerName);
-            trainLabel.setText(trainDetails);
             routeLabel.setText(route);
-            dateLabel.setText(journeyDate.toString());
+
+            dateLabel.setText(
+                journeyDate.toString()
+            );
 
             passengerCountLabel.setText(
-                String.valueOf(passengers.size())
+                String.valueOf(
+                    passengers.size()
+                )
             );
 
             totalFareLabel.setText(
-                "Rs. " + calculateTotalFare()
+                "Rs. "
+                    + calculateTotalFare()
             );
 
         } catch (SQLException exception) {
@@ -387,6 +819,7 @@ public class BookingConfirmationFrame extends JFrame {
                 "Could not load booking details:\n"
                     + exception.getMessage()
             );
+
             confirmButton.setEnabled(false);
         }
     }
@@ -396,22 +829,34 @@ public class BookingConfirmationFrame extends JFrame {
         String stationSql,
         String stationName
     ) throws SQLException {
+
         try (
             PreparedStatement statement =
-                connection.prepareStatement(stationSql)
+                connection.prepareStatement(
+                    stationSql
+                )
         ) {
-            statement.setString(1, stationName);
+            statement.setString(
+                1,
+                stationName
+            );
 
-            try (ResultSet result = statement.executeQuery()) {
+            try (
+                ResultSet result =
+                    statement.executeQuery()
+            ) {
                 if (!result.next()) {
                     throw new SQLException(
                         "Station '"
                             + stationName
-                            + "' is missing from the stations table."
+                            + "' is missing from "
+                            + "the stations table."
                     );
                 }
 
-                return result.getLong("station_id");
+                return result.getLong(
+                    "station_id"
+                );
             }
         }
     }
@@ -419,62 +864,81 @@ public class BookingConfirmationFrame extends JFrame {
     private void loadPassengers() {
         tableModel.setRowCount(0);
 
+        if (passengers == null) {
+            return;
+        }
+
         for (
-            PassengerDetailsFrame.Passenger passenger
-                : passengers
+            PassengerDetailsFrame.Passenger
+                passenger : passengers
         ) {
-            tableModel.addRow(new Object[]{
-                passenger.getName(),
-                passenger.getNic(),
-                passenger.getAge(),
-                passenger.getGender(),
-                passenger.getSeatClass()
-            });
+            tableModel.addRow(
+                new Object[] {
+                    passenger.getName(),
+                    passenger.getNic(),
+                    passenger.getAge(),
+                    passenger.getGender(),
+                    passenger.getSeatClass()
+                }
+            );
         }
     }
 
     private BigDecimal calculateTotalFare() {
-        BigDecimal total = BigDecimal.ZERO;
+        BigDecimal total =
+            BigDecimal.ZERO;
 
         for (
-            PassengerDetailsFrame.Passenger passenger
-                : passengers
+            PassengerDetailsFrame.Passenger
+                passenger : passengers
         ) {
             BigDecimal classCharge;
 
             if (
-                "First Class".equals(
+                "First Class".equalsIgnoreCase(
                     passenger.getSeatClass()
                 )
             ) {
-                classCharge = new BigDecimal("150.00");
+                classCharge =
+                    new BigDecimal("150.00");
             } else {
-                classCharge = new BigDecimal("200.00");
+                classCharge =
+                    new BigDecimal("200.00");
             }
 
-            total = total.add(
-                baseFare.add(classCharge)
-            );
+            total =
+                total.add(
+                    baseFare.add(
+                        classCharge
+                    )
+                );
         }
 
         return total;
     }
 
     private void confirmBooking() {
-        int answer = JOptionPane.showConfirmDialog(
-            this,
-            "Confirm this booking?",
-            "Confirm Booking",
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.QUESTION_MESSAGE
-        );
+        int answer =
+            JOptionPane.showConfirmDialog(
+                this,
+                "Confirm this booking?",
+                "Confirm Booking",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+            );
 
-        if (answer != JOptionPane.YES_OPTION) {
+        if (
+            answer
+                != JOptionPane.YES_OPTION
+        ) {
             return;
         }
 
         confirmButton.setEnabled(false);
-        confirmButton.setText("BOOKING...");
+
+        confirmButton.setText(
+            "BOOKING..."
+        );
 
         String seatSql = """
             SELECT available_seats
@@ -495,12 +959,16 @@ public class BookingConfirmationFrame extends JFrame {
                 total_fare,
                 status
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, 'CONFIRMED')
+            VALUES (
+                ?, ?, ?, ?, ?, ?, ?,
+                'CONFIRMED'
+            )
             """;
 
         String updateSeatsSql = """
             UPDATE schedules
-            SET available_seats = available_seats - ?
+            SET available_seats =
+                available_seats - ?
             WHERE schedule_id = ?
             """;
 
@@ -508,34 +976,48 @@ public class BookingConfirmationFrame extends JFrame {
 
         try {
             connection =
-                DatabaseConnection.getConnection();
+                DatabaseConnection
+                    .getConnection();
 
             connection.setAutoCommit(false);
 
             try (
                 PreparedStatement seatStatement =
-                    connection.prepareStatement(seatSql)
+                    connection.prepareStatement(
+                        seatSql
+                    )
             ) {
-                seatStatement.setLong(1, scheduleId);
+                seatStatement.setLong(
+                    1,
+                    scheduleId
+                );
 
                 try (
                     ResultSet result =
-                        seatStatement.executeQuery()
+                        seatStatement
+                            .executeQuery()
                 ) {
                     if (!result.next()) {
                         throw new SQLException(
-                            "The selected schedule is unavailable."
+                            "The selected schedule "
+                                + "is unavailable."
                         );
                     }
 
                     int availableSeats =
-                        result.getInt("available_seats");
+                        result.getInt(
+                            "available_seats"
+                        );
 
-                    if (availableSeats < passengers.size()) {
+                    if (
+                        availableSeats
+                            < passengers.size()
+                    ) {
                         throw new SQLException(
                             "Only "
                                 + availableSeats
-                                + " seat(s) are available."
+                                + " seat(s) "
+                                + "are available."
                         );
                     }
                 }
@@ -544,21 +1026,43 @@ public class BookingConfirmationFrame extends JFrame {
             String pnr = generatePnr();
 
             try (
-                PreparedStatement bookingStatement =
-                    connection.prepareStatement(bookingSql)
+                PreparedStatement
+                    bookingStatement =
+                        connection
+                            .prepareStatement(
+                                bookingSql
+                            )
             ) {
-                bookingStatement.setString(1, pnr);
-                bookingStatement.setLong(2, customerId);
-                bookingStatement.setLong(3, scheduleId);
-                bookingStatement.setLong(4, sourceStationId);
+                bookingStatement.setString(
+                    1,
+                    pnr
+                );
+
+                bookingStatement.setLong(
+                    2,
+                    customerId
+                );
+
+                bookingStatement.setLong(
+                    3,
+                    scheduleId
+                );
+
+                bookingStatement.setLong(
+                    4,
+                    sourceStationId
+                );
+
                 bookingStatement.setLong(
                     5,
                     destinationStationId
                 );
+
                 bookingStatement.setInt(
                     6,
                     passengers.size()
                 );
+
                 bookingStatement.setBigDecimal(
                     7,
                     calculateTotalFare()
@@ -568,14 +1072,23 @@ public class BookingConfirmationFrame extends JFrame {
             }
 
             try (
-                PreparedStatement updateStatement =
-                    connection.prepareStatement(updateSeatsSql)
+                PreparedStatement
+                    updateStatement =
+                        connection
+                            .prepareStatement(
+                                updateSeatsSql
+                            )
             ) {
                 updateStatement.setInt(
                     1,
                     passengers.size()
                 );
-                updateStatement.setLong(2, scheduleId);
+
+                updateStatement.setLong(
+                    2,
+                    scheduleId
+                );
+
                 updateStatement.executeUpdate();
             }
 
@@ -584,8 +1097,9 @@ public class BookingConfirmationFrame extends JFrame {
             JOptionPane.showMessageDialog(
                 this,
                 "Booking confirmed successfully.\n"
-                    + "PNR: " + pnr + "\n"
-                    + "Total Fare: Rs. "
+                    + "PNR: "
+                    + pnr
+                    + "\nTotal Fare: Rs. "
                     + calculateTotalFare(),
                 "Booking Successful",
                 JOptionPane.INFORMATION_MESSAGE
@@ -593,35 +1107,53 @@ public class BookingConfirmationFrame extends JFrame {
 
             dispose();
 
-            new CustomerDashboard(
-                customerId,
-                customerName
-            ).setVisible(true);
+            CustomerDashboard dashboard =
+                new CustomerDashboard(
+                    customerId,
+                    customerName
+                );
+
+            dashboard.setVisible(true);
 
         } catch (Exception exception) {
             if (connection != null) {
                 try {
                     connection.rollback();
-                } catch (SQLException ignored) {
+                } catch (
+                    SQLException rollbackError
+                ) {
+                    rollbackError
+                        .printStackTrace();
                 }
             }
 
             showDatabaseError(
-                "Could not complete the booking:\n"
+                "Could not complete "
+                    + "the booking:\n"
                     + exception.getMessage()
             );
 
         } finally {
             if (connection != null) {
                 try {
-                    connection.setAutoCommit(true);
+                    connection
+                        .setAutoCommit(true);
+
                     connection.close();
-                } catch (SQLException ignored) {
+
+                } catch (
+                    SQLException closeError
+                ) {
+                    closeError
+                        .printStackTrace();
                 }
             }
 
             confirmButton.setEnabled(true);
-            confirmButton.setText("CONFIRM BOOKING");
+
+            confirmButton.setText(
+                "CONFIRM BOOKING"
+            );
         }
     }
 
@@ -634,7 +1166,9 @@ public class BookingConfirmationFrame extends JFrame {
                 .toUpperCase();
     }
 
-    private void showDatabaseError(String message) {
+    private void showDatabaseError(
+        String message
+    ) {
         JOptionPane.showMessageDialog(
             this,
             message,
@@ -652,4 +1186,3 @@ public class BookingConfirmationFrame extends JFrame {
         }
     }
 }
-
